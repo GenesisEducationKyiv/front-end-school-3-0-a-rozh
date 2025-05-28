@@ -1,4 +1,4 @@
-# 0004 - Implement Environment Configuration
+# 0003 - Implement Environment Configuration
 
 **Status**: Proposed  
 **Date**: 2025-05-27
