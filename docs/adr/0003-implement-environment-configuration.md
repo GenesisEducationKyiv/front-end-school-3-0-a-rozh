@@ -3,6 +3,10 @@
 **Status**: Proposed  
 **Date**: 2025-05-27
 
+## Context
+
+The application needs to support different API endpoints and configurations across development, staging, and production environments. Hard-coded configuration values create deployment risks and make it difficult for developers to work with local backend services or test different API versions.
+
 ## Decision
 
 We will manage environment-specific configuration using `.env` files at the project root, supported by Vite's built-in environment variable loading (`import.meta.env`).  

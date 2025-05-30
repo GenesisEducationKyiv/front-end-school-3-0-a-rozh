@@ -3,6 +3,10 @@
 **Status**: Proposed  
 **Date**: 2025-05-27
 
+## Context
+
+The project currently lacks automated testing, increasing the risk of bugs and slowing down development as manual testing becomes time-consuming. The developers need confidence to refactor and add features without breaking existing functionality, especially as the codebase grows in complexity.
+
 ## Decision
 
 We will implement Vitest with React Testing Library as the primary testing framework.

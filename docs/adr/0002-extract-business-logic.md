@@ -3,6 +3,10 @@
 **Status**: Proposed  
 **Date**: 2025-05-27
 
+## Context
+
+Components currently mix React-specific logic with pure business logic, making unit testing difficult and code reuse impossible. Developers need better separation of concerns to improve code maintainability, enable proper testing, and make future refactoring safer and more predictable.
+
 ## Decision
 
 We will extract business logic from components using a two-layer approach:

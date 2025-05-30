@@ -3,6 +3,10 @@
 **Status**: Proposed  
 **Date**: 2025-05-27
 
+## Context
+
+The current monolithic `api.ts` file (114 lines) is becoming difficult to navigate and maintain as new features are added. A single large file makes it harder to locate specific endpoints, slows down development when working on different features, and complicates testing individual API functionalities.
+
 ## Decision
 
 We will reorganize the current monolithic `src/services/api.ts` file into feature-specific API modules while keeping RTK Query as the primary data-fetching solution.
