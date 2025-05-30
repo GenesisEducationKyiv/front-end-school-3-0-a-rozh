@@ -7,7 +7,7 @@ import {
     useUpdateTrackMutation,
 } from '../services/api';
 
-import { type TrackFormData } from '../types/apiTypes';
+import { type TrackFormData, TrackFormDataSchema } from '../types/apiSchemas';
 
 import Label from './Label';
 import toast from 'react-hot-toast';
@@ -32,6 +32,7 @@ export default function TrackForm({ onClose, slug }: TrackFormProps) {
         artist?: string;
         genres?: string;
         coverImage?: string;
+        album?: string;
     }>({});
 
     const [createTrack, { isLoading: isCreatingTrack }] = useCreateTrackMutation();
@@ -86,26 +87,23 @@ export default function TrackForm({ onClose, slug }: TrackFormProps) {
     };
 
     const validate = () => {
-        const newErrors: typeof errors = {};
-        if (!formData.title.trim()) {
-            newErrors.title = 'Title is required.';
+        setErrors({});
+
+        const result = TrackFormDataSchema.safeParse(formData);
+
+        if (!result.success) {
+            const newErrors: typeof errors = {};
+
+            result.error.errors.forEach((issue) => {
+                const path = issue.path[0] as string;
+                newErrors[path as keyof typeof errors] = issue.message;
+            });
+
+            setErrors(newErrors);
+            return false;
         }
 
-        if (!formData.artist.trim()) {
-            newErrors.artist = 'Artist is required.';
-        }
-
-        if (formData.genres.length === 0) {
-            newErrors.genres = 'Please select at least one genre.';
-        }
-
-        const urlPattern = /^(https?:\/\/)[^\s/$.?#].[^\s]*$/i;
-        if (formData.coverImage && !urlPattern.test(formData.coverImage)) {
-            newErrors.coverImage = 'Please enter a valid image URL.';
-        }
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
+        return true;
     };
 
     const handleSubmit = (e: React.FormEvent) => {

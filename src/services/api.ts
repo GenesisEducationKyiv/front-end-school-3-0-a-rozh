@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { z } from 'zod';
 
 import {
     type TrackFormData,
@@ -6,9 +7,21 @@ import {
     type Track,
     type TracksResponse,
     type Genres,
-} from '../types/apiTypes';
+    TrackSchema,
+    TracksResponseSchema,
+    GenresSchema,
+} from '../types/apiSchemas';
 
 export const BASE_URL = 'http://localhost:8000/api/';
+
+const validateResponse = <T>(schema: z.ZodSchema<T>, data: unknown): T => {
+    try {
+        return schema.parse(data);
+    } catch (error) {
+        console.error('API response validation failed:', error);
+        throw new Error(`Invalid API response: ${error}`);
+    }
+};
 
 export const api = createApi({
     reducerPath: 'api',
@@ -26,10 +39,14 @@ export const api = createApi({
                 if (artist) query += `&artist=${artist}`;
                 return query;
             },
+            transformResponse: (response: unknown) =>
+                validateResponse<TracksResponse>(TracksResponseSchema, response),
             providesTags: ['Tracks'],
         }),
         getTrackBySlug: builder.query<Track, string>({
             query: (slug) => `tracks/${slug}`,
+            transformResponse: (response: unknown) =>
+                validateResponse<Track>(TrackSchema, response),
             providesTags: (_result, _error, slug) => [{ type: 'Tracks', id: slug }],
         }),
         createTrack: builder.mutation<Track, TrackFormData>({
@@ -38,6 +55,8 @@ export const api = createApi({
                 method: 'POST',
                 body: newTrack,
             }),
+            transformResponse: (response: unknown) =>
+                validateResponse<Track>(TrackSchema, response),
             invalidatesTags: ['Tracks'],
         }),
         updateTrack: builder.mutation<
@@ -49,6 +68,8 @@ export const api = createApi({
                 method: 'PUT',
                 body: track,
             }),
+            transformResponse: (response: unknown) =>
+                validateResponse<Track>(TrackSchema, response),
             invalidatesTags: (_result, _error, { slug }) => [
                 'Tracks',
                 { type: 'Tracks', id: slug },
@@ -72,6 +93,8 @@ export const api = createApi({
         //GENRES
         getGenres: builder.query<Genres, void>({
             query: () => 'genres',
+            transformResponse: (response: unknown) =>
+                validateResponse<Genres>(GenresSchema, response),
         }),
         //FILES
         uploadTrackFile: builder.mutation<void, { id: string; file: File }>({

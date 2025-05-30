@@ -3,7 +3,7 @@ import React, { type ReactElement, useState } from 'react';
 import Modal from '../components/Modal';
 import TrackForm from '../components/TrackForm';
 
-import { type Genres } from '../types/apiTypes';
+import { type Genres } from '../types/apiSchemas';
 
 interface TracksModalProps {
     trigger: ReactElement;
