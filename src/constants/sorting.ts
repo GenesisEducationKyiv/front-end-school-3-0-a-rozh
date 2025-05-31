@@ -1,15 +1,23 @@
-export const SORT_OPTIONS_TUPLE = ['title', 'artist', 'album', 'createdAt'] as const;
-export const SORT_ORDER_TUPLE = ['asc', 'desc'] as const;
-
-// Named constants for better readability (derived from tuples)
 export const SORT_FIELDS = {
-    TITLE: SORT_OPTIONS_TUPLE[0],
-    ARTIST: SORT_OPTIONS_TUPLE[1],
-    ALBUM: SORT_OPTIONS_TUPLE[2],
-    CREATED_AT: SORT_OPTIONS_TUPLE[3],
+    TITLE: 'title',
+    ARTIST: 'artist',
+    ALBUM: 'album',
+    CREATED_AT: 'createdAt',
 } as const;
 
 export const SORT_DIRECTIONS = {
-    ASC: SORT_ORDER_TUPLE[0],
-    DESC: SORT_ORDER_TUPLE[1],
+    ASC: 'asc',
+    DESC: 'desc',
 } as const;
+
+export const SORT_OPTIONS_TUPLE = Object.values(SORT_FIELDS) as [
+    typeof SORT_FIELDS.TITLE,
+    typeof SORT_FIELDS.ARTIST,
+    typeof SORT_FIELDS.ALBUM,
+    typeof SORT_FIELDS.CREATED_AT
+];
+
+export const SORT_ORDER_TUPLE = Object.values(SORT_DIRECTIONS) as [
+    typeof SORT_DIRECTIONS.ASC,
+    typeof SORT_DIRECTIONS.DESC
+];
