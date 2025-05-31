@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { HiOutlinePause, HiOutlinePlay } from 'react-icons/hi2';
 
 import { BASE_URL } from '../services/api';
+import { isAudioElement } from '../utils';
 
 const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -33,21 +34,22 @@ export default function AudioPlayer({
     const isActive = playingTrackId === id;
 
     useEffect(() => {
-        if (!isActive && isPlaying) {
-            audioRef.current?.pause();
-            audioRef.current!.currentTime = 0;
+        if (!isActive && isPlaying && isAudioElement(audioRef.current)) {
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0;
             setIsPlaying(false);
         }
     }, [isActive, isPlaying]);
 
     useEffect(() => {
-        if (!isActive && playingTrackId) {
-            audioRef.current!.currentTime = 0;
+        if (!isActive && playingTrackId && isAudioElement(audioRef.current)) {
+            audioRef.current.currentTime = 0;
         }
     }, [isActive, playingTrackId]);
 
     const togglePlay = () => {
-        if (!audioRef.current) return;
+        if (!isAudioElement(audioRef.current)) return;
+
         if (isPlaying) {
             audioRef.current.pause();
             setIsPlaying(false);
@@ -60,20 +62,22 @@ export default function AudioPlayer({
     };
 
     const handleTimeUpdate = () => {
-        if (!audioRef.current) return;
+        if (!isAudioElement(audioRef.current)) return;
+
         const { currentTime, duration } = audioRef.current;
         setCurrentTime(currentTime);
         setProgress((currentTime / duration) * 100 || 0);
     };
 
     const handleLoadedMetadata = () => {
-        if (audioRef.current?.duration) {
+        if (isAudioElement(audioRef.current) && audioRef.current.duration) {
             setDuration(audioRef.current.duration);
         }
     };
 
     const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!audioRef.current || !progressRef.current) return;
+        if (!isAudioElement(audioRef.current) || !progressRef.current) return;
+
         const rect = progressRef.current.getBoundingClientRect();
         const clickX = e.clientX - rect.left;
         const newTime = (clickX / rect.width) * duration;
@@ -83,14 +87,14 @@ export default function AudioPlayer({
     const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newVolume = parseFloat(e.target.value);
         setVolume(newVolume);
-        if (audioRef.current) {
+        if (isAudioElement(audioRef.current)) {
             audioRef.current.volume = newVolume;
         }
     };
 
     useEffect(() => {
         const audio = audioRef.current;
-        if (!audio) return;
+        if (!isAudioElement(audio)) return;
 
         const onPlay = () => setIsPlaying(true);
         const onPause = () => setIsPlaying(false);

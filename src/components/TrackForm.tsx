@@ -6,6 +6,7 @@ import {
     useGetTrackBySlugQuery,
     useUpdateTrackMutation,
 } from '../services/api';
+import { isValidTrackFormErrorPath } from '../utils';
 
 import { type TrackFormData, TrackFormDataSchema } from '../types/apiSchemas';
 
@@ -27,13 +28,10 @@ export default function TrackForm({ onClose, slug }: TrackFormProps) {
         genres: [],
         coverImage: '',
     });
-    const [errors, setErrors] = useState<{
-        title?: string;
-        artist?: string;
-        genres?: string;
-        coverImage?: string;
-        album?: string;
-    }>({});
+
+    const [errors, setErrors] = useState<Partial<Record<keyof TrackFormData, string>>>(
+        {}
+    );
 
     const [createTrack, { isLoading: isCreatingTrack }] = useCreateTrackMutation();
     const [updateTrack, { isLoading: isUpdatingTrack }] = useUpdateTrackMutation();
@@ -95,8 +93,10 @@ export default function TrackForm({ onClose, slug }: TrackFormProps) {
             const newErrors: typeof errors = {};
 
             result.error.errors.forEach((issue) => {
-                const path = issue.path[0] as string;
-                newErrors[path as keyof typeof errors] = issue.message;
+                const path = issue.path[0];
+                if (isValidTrackFormErrorPath(path)) {
+                    newErrors[path] = issue.message;
+                }
             });
 
             setErrors(newErrors);

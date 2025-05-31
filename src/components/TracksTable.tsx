@@ -3,7 +3,7 @@ import { useState } from 'react';
 import TracksRow from './TracksRow';
 import SortingTableButton from './SortingTableButton';
 import Spinner from './Spinner';
-import { SORT_FIELDS, SORT_DIRECTIONS } from '../constants/sorting';
+import { SORT_DIRECTIONS, TRACK_FIELDS } from '../constants/';
 
 import {
     type TracksResponse,
@@ -117,9 +117,9 @@ export default function TracksTable({
                             <div className="flex items-center">
                                 Song
                                 <SortingTableButton
-                                    isActive={sortingColumn === SORT_FIELDS.TITLE}
+                                    isActive={sortingColumn === TRACK_FIELDS.TITLE}
                                     order={sortingOrder}
-                                    onClick={() => changeSortingOrder(SORT_FIELDS.TITLE)}
+                                    onClick={() => changeSortingOrder(TRACK_FIELDS.TITLE)}
                                 />
                             </div>
                         </th>
@@ -127,9 +127,11 @@ export default function TracksTable({
                             <div className="flex items-center">
                                 Artist
                                 <SortingTableButton
-                                    isActive={sortingColumn === SORT_FIELDS.ARTIST}
+                                    isActive={sortingColumn === TRACK_FIELDS.ARTIST}
                                     order={sortingOrder}
-                                    onClick={() => changeSortingOrder(SORT_FIELDS.ARTIST)}
+                                    onClick={() =>
+                                        changeSortingOrder(TRACK_FIELDS.ARTIST)
+                                    }
                                 />
                             </div>
                         </th>
@@ -137,9 +139,9 @@ export default function TracksTable({
                             <div className="flex items-center">
                                 Album
                                 <SortingTableButton
-                                    isActive={sortingColumn === SORT_FIELDS.ALBUM}
+                                    isActive={sortingColumn === TRACK_FIELDS.ALBUM}
                                     order={sortingOrder}
-                                    onClick={() => changeSortingOrder(SORT_FIELDS.ALBUM)}
+                                    onClick={() => changeSortingOrder(TRACK_FIELDS.ALBUM)}
                                 />
                             </div>
                         </th>
