@@ -42,16 +42,16 @@ export default function TracksTable({
         if (sortingColumn !== column) {
             setSortingColumn(column);
             setSortingOrder(SORT_DIRECTIONS.ASC);
+            return;
         }
 
-        if (!sortingColumn && sortingOrder === SORT_DIRECTIONS.ASC) {
-            setSortingColumn(column);
-        } else if (sortingColumn === column && sortingOrder === SORT_DIRECTIONS.ASC) {
+        if (sortingOrder === SORT_DIRECTIONS.ASC) {
             setSortingOrder(SORT_DIRECTIONS.DESC);
-        } else if (sortingColumn === column && sortingOrder === SORT_DIRECTIONS.DESC) {
-            setSortingColumn(null);
-            setSortingOrder(SORT_DIRECTIONS.ASC);
+            return;
         }
+
+        setSortingColumn(null);
+        setSortingOrder(SORT_DIRECTIONS.ASC);
     }
 
     const handleSelectAllTracks = (e: React.ChangeEvent<HTMLInputElement>) => {
