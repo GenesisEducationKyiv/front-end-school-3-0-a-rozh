@@ -3,12 +3,13 @@ import { useState } from 'react';
 import TracksRow from './TracksRow';
 import SortingTableButton from './SortingTableButton';
 import Spinner from './Spinner';
+import { SORT_DIRECTIONS, TRACK_FIELDS } from '../constants/';
 
 import {
     type TracksResponse,
     type TracksSortOptions,
     type TracksSortOrder,
-} from '../types/apiTypes';
+} from '../types/apiSchemas';
 
 interface TracksTableProps {
     tracks: TracksResponse | undefined;
@@ -40,17 +41,17 @@ export default function TracksTable({
     function changeSortingOrder(column: TracksSortOptions) {
         if (sortingColumn !== column) {
             setSortingColumn(column);
-            setSortingOrder('asc');
+            setSortingOrder(SORT_DIRECTIONS.ASC);
+            return;
         }
 
-        if (!sortingColumn && sortingOrder === 'asc') {
-            setSortingColumn(column);
-        } else if (sortingColumn === column && sortingOrder === 'asc') {
-            setSortingOrder('desc');
-        } else if (sortingColumn === column && sortingOrder === 'desc') {
-            setSortingColumn(null);
-            setSortingOrder('asc');
+        if (sortingOrder === SORT_DIRECTIONS.ASC) {
+            setSortingOrder(SORT_DIRECTIONS.DESC);
+            return;
         }
+
+        setSortingColumn(null);
+        setSortingOrder(SORT_DIRECTIONS.ASC);
     }
 
     const handleSelectAllTracks = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -116,9 +117,9 @@ export default function TracksTable({
                             <div className="flex items-center">
                                 Song
                                 <SortingTableButton
-                                    isActive={sortingColumn === 'title'}
+                                    isActive={sortingColumn === TRACK_FIELDS.TITLE}
                                     order={sortingOrder}
-                                    onClick={() => changeSortingOrder('title')}
+                                    onClick={() => changeSortingOrder(TRACK_FIELDS.TITLE)}
                                 />
                             </div>
                         </th>
@@ -126,9 +127,11 @@ export default function TracksTable({
                             <div className="flex items-center">
                                 Artist
                                 <SortingTableButton
-                                    isActive={sortingColumn === 'artist'}
+                                    isActive={sortingColumn === TRACK_FIELDS.ARTIST}
                                     order={sortingOrder}
-                                    onClick={() => changeSortingOrder('artist')}
+                                    onClick={() =>
+                                        changeSortingOrder(TRACK_FIELDS.ARTIST)
+                                    }
                                 />
                             </div>
                         </th>
@@ -136,9 +139,9 @@ export default function TracksTable({
                             <div className="flex items-center">
                                 Album
                                 <SortingTableButton
-                                    isActive={sortingColumn === 'album'}
+                                    isActive={sortingColumn === TRACK_FIELDS.ALBUM}
                                     order={sortingOrder}
-                                    onClick={() => changeSortingOrder('album')}
+                                    onClick={() => changeSortingOrder(TRACK_FIELDS.ALBUM)}
                                 />
                             </div>
                         </th>

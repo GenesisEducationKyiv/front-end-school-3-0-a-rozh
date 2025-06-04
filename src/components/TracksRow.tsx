@@ -10,7 +10,7 @@ import AudioPlayer from './AudioPlayer';
 import UploadAudio from './UploadAudio';
 import ConfirmationModal from './ConfirmationModal';
 
-import { type Track } from '../types/apiTypes';
+import { type Track } from '../types/apiSchemas';
 
 interface TracksRowProps {
     track: Track;

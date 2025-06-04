@@ -59,7 +59,11 @@ export default function UploadAudio({ trackId, onFileError }: UploadAudioProps) 
                 type="file"
                 accept={ALLOWED_TYPES.join(',')}
                 onChange={handleFileChange}
-                onClick={(e) => ((e.target as HTMLInputElement).value = '')}
+                onClick={(e) => {
+                    if (e.target instanceof HTMLInputElement) {
+                        e.target.value = '';
+                    }
+                }}
                 className="hidden"
                 data-testid={`upload-track-${trackId}`}
                 disabled={isLoading}

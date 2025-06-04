@@ -8,6 +8,7 @@ import {
     useGetGenresQuery,
     useGetTracksQuery,
 } from '../services/api';
+import { SORT_DIRECTIONS } from '../constants/sorting';
 
 import TracksTable from '../components/TracksTable';
 import TracksModal from '../components/TracksModal';
@@ -18,12 +19,14 @@ import {
     type TracksSortOptions,
     type TracksSortOrder,
     type TracksParams,
-} from '../types/apiTypes';
+} from '../types/apiSchemas';
 
 export default function Tracks() {
     const [activePage, setActivePage] = useState(1);
     const [sortingColumn, setSortingColumn] = useState<TracksSortOptions | null>(null);
-    const [sortingOrder, setSortingOrder] = useState<TracksSortOrder>('asc');
+    const [sortingOrder, setSortingOrder] = useState<TracksSortOrder>(
+        SORT_DIRECTIONS.ASC
+    );
     const [searchQuery, setSearchQuery] = useState('');
     const [searchArtistQuery, setSearchArtistQuery] = useState('');
     const [selectedGenre, setSelectedGenre] = useState('');
