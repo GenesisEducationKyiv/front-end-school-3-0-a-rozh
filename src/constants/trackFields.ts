@@ -1,4 +1,4 @@
-import { TrackSchema } from '@/types/apiSchemas';
+import { TrackSchema } from '../types/apiSchemas';
 
 type TrackKey = keyof typeof TrackSchema.shape;
 
