@@ -5,21 +5,14 @@ import SortingTableButton from './SortingTableButton';
 import Spinner from './Spinner';
 import { SORT_DIRECTIONS, TRACK_FIELDS } from '../constants/';
 
-import {
-    type TracksResponse,
-    type TracksSortOptions,
-    type TracksSortOrder,
-} from '../types/apiSchemas';
+import { type TracksResponse, type TracksSortOptions } from '../types/apiSchemas';
+import { useSearchParams } from 'react-router-dom';
+import { useParsedTracksParams } from '../hooks/useParsedTracksParams';
+import { TRACK_PARAMS } from '../constants/trackParams';
 
 interface TracksTableProps {
     tracks: TracksResponse | undefined;
     isFetchingTracks: boolean;
-    sortingColumn: TracksSortOptions | null;
-    setSortingColumn: React.Dispatch<React.SetStateAction<TracksSortOptions | null>>;
-    sortingOrder: TracksSortOrder;
-    setSortingOrder: React.Dispatch<React.SetStateAction<TracksSortOrder>>;
-    activePage: number;
-    setActivePage: React.Dispatch<React.SetStateAction<number>>;
     selectedTracksIds: string[];
     setSelectedTracksIds: React.Dispatch<React.SetStateAction<string[]>>;
 }
@@ -27,31 +20,38 @@ interface TracksTableProps {
 export default function TracksTable({
     tracks,
     isFetchingTracks,
-    sortingColumn,
-    setSortingColumn,
-    sortingOrder,
-    setSortingOrder,
-    activePage,
-    setActivePage,
     selectedTracksIds,
     setSelectedTracksIds,
 }: TracksTableProps) {
     const [playingTrackId, setPlayingTrackId] = useState<string | null>(null);
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    const { page, sort, order } = useParsedTracksParams();
+
+    function setPage(page: number) {
+        const newParams = new URLSearchParams(searchParams);
+        newParams.set(TRACK_PARAMS.PAGE, String(page));
+        setSearchParams(newParams);
+    }
 
     function changeSortingOrder(column: TracksSortOptions) {
-        if (sortingColumn !== column) {
-            setSortingColumn(column);
-            setSortingOrder(SORT_DIRECTIONS.ASC);
+        const newParams = new URLSearchParams(searchParams);
+        if (sort !== column) {
+            newParams.set(TRACK_PARAMS.SORT, column);
+            newParams.set(TRACK_PARAMS.ORDER, SORT_DIRECTIONS.ASC);
+            setSearchParams(newParams);
             return;
         }
 
-        if (sortingOrder === SORT_DIRECTIONS.ASC) {
-            setSortingOrder(SORT_DIRECTIONS.DESC);
+        if (order === SORT_DIRECTIONS.ASC) {
+            newParams.set(TRACK_PARAMS.ORDER, SORT_DIRECTIONS.DESC);
+            setSearchParams(newParams);
             return;
         }
 
-        setSortingColumn(null);
-        setSortingOrder(SORT_DIRECTIONS.ASC);
+        newParams.delete(TRACK_PARAMS.SORT);
+        newParams.delete(TRACK_PARAMS.ORDER);
+        setSearchParams(newParams);
     }
 
     const handleSelectAllTracks = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -117,8 +117,8 @@ export default function TracksTable({
                             <div className="flex items-center">
                                 Song
                                 <SortingTableButton
-                                    isActive={sortingColumn === TRACK_FIELDS.TITLE}
-                                    order={sortingOrder}
+                                    isActive={sort === TRACK_FIELDS.TITLE}
+                                    order={order}
                                     onClick={() => changeSortingOrder(TRACK_FIELDS.TITLE)}
                                 />
                             </div>
@@ -127,8 +127,8 @@ export default function TracksTable({
                             <div className="flex items-center">
                                 Artist
                                 <SortingTableButton
-                                    isActive={sortingColumn === TRACK_FIELDS.ARTIST}
-                                    order={sortingOrder}
+                                    isActive={sort === TRACK_FIELDS.ARTIST}
+                                    order={order}
                                     onClick={() =>
                                         changeSortingOrder(TRACK_FIELDS.ARTIST)
                                     }
@@ -139,8 +139,8 @@ export default function TracksTable({
                             <div className="flex items-center">
                                 Album
                                 <SortingTableButton
-                                    isActive={sortingColumn === TRACK_FIELDS.ALBUM}
-                                    order={sortingOrder}
+                                    isActive={sort === TRACK_FIELDS.ALBUM}
+                                    order={order}
                                     onClick={() => changeSortingOrder(TRACK_FIELDS.ALBUM)}
                                 />
                             </div>
@@ -214,14 +214,10 @@ export default function TracksTable({
                     <ul className="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8 pr-2">
                         <li>
                             <button
-                                onClick={() =>
-                                    setActivePage((activePage) => activePage - 1)
-                                }
-                                disabled={activePage === 1}
+                                onClick={() => setPage(page - 1)}
+                                disabled={page === 1}
                                 className={`flex items-center justify-center px-3 h-8 leading-tight border bg-gray-800 border-gray-700 text-gray-400 hover:bg-gray-700 hover:text-white rounded-l-lg ${
-                                    activePage === 1
-                                        ? 'cursor-not-allowed'
-                                        : 'cursor-pointer'
+                                    page === 1 ? 'cursor-not-allowed' : 'cursor-pointer'
                                 }`}
                                 data-testid="pagination-prev"
                             >
@@ -231,33 +227,30 @@ export default function TracksTable({
                         {Array.from(
                             { length: tracks.meta.totalPages },
                             (_, i) => i + 1
-                        ).map((page) => (
-                            <li key={page}>
-                                <a
-                                    onClick={() => setActivePage(page)}
-                                    href="#"
-                                    className={`flex items-center justify-center px-3 h-8 leading-tight border border-gray-700 text-gray-400 hover:bg-gray-700 hover:text-white ${
-                                        activePage === page
+                        ).map((pageNumber) => (
+                            <li key={pageNumber}>
+                                <button
+                                    onClick={() => setPage(pageNumber)}
+                                    className={`flex items-center justify-center px-3 h-8 leading-tight border border-gray-700 text-gray-400 hover:bg-gray-700 hover:text-white cursor-pointer ${
+                                        pageNumber === page
                                             ? 'bg-gray-600'
                                             : 'bg-gray-800'
                                     }`}
                                 >
-                                    {page}
-                                </a>
+                                    {pageNumber}
+                                </button>
                             </li>
                         ))}
 
                         <li>
                             <button
-                                onClick={() =>
-                                    setActivePage((activePage) => activePage + 1)
-                                }
+                                onClick={() => setPage(page + 1)}
                                 disabled={
-                                    activePage === tracks.meta.totalPages ||
+                                    page === tracks.meta.totalPages ||
                                     tracks.data.length === 0
                                 }
                                 className={`flex items-center justify-center px-3 h-8 leading-tight border bg-gray-800 border-gray-700 text-gray-400 hover:bg-gray-700 hover:text-white rounded-r-lg ${
-                                    activePage === tracks.meta.totalPages ||
+                                    page === tracks.meta.totalPages ||
                                     tracks.data.length === 0
                                         ? 'cursor-not-allowed'
                                         : 'cursor-pointer'

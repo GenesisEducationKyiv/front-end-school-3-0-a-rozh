@@ -1,28 +1,50 @@
 import { HiOutlineSearch } from 'react-icons/hi';
 
 import Spinner from './Spinner';
+import { useSearchParams } from 'react-router-dom';
+import { TRACK_PARAMS } from '../constants/trackParams';
+import { useCallback, useEffect, useState } from 'react';
+import useDebounce from '../hooks/useDebounce';
+import { useParsedTracksParams } from '../hooks/useParsedTracksParams';
 
 interface TrackSearchAndFilterBarProps {
-    searchQuery: string;
-    setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
     genres?: string[];
-    selectedGenre: string;
-    setSelectedGenre: React.Dispatch<React.SetStateAction<string>>;
-    searchArtistQuery: string;
-    setSearchArtistQuery: React.Dispatch<React.SetStateAction<string>>;
     isFetchingGenres: boolean;
 }
 
 export default function TrackSearchAndFilterBar({
-    searchQuery,
-    setSearchQuery,
     genres,
-    selectedGenre,
-    setSelectedGenre,
-    searchArtistQuery,
-    setSearchArtistQuery,
     isFetchingGenres,
 }: TrackSearchAndFilterBarProps) {
+    const [search, setSearch] = useState('');
+    const [artist, setArtist] = useState('');
+    const [searchParams, setSearchParams] = useSearchParams();
+    const { genre } = useParsedTracksParams();
+
+    const debouncedSearch = useDebounce(search, 200);
+    const debouncedArtist = useDebounce(artist, 200);
+
+    const updateParam = useCallback(
+        (key: string, value: string) => {
+            const newParams = new URLSearchParams(searchParams);
+            if (value.trim()) {
+                newParams.set(key, value);
+            } else {
+                newParams.delete(key);
+            }
+            setSearchParams(newParams);
+        },
+        [searchParams, setSearchParams]
+    );
+
+    useEffect(() => {
+        updateParam(TRACK_PARAMS.SEARCH, debouncedSearch);
+    }, [debouncedSearch, updateParam]);
+
+    useEffect(() => {
+        updateParam(TRACK_PARAMS.ARTIST, debouncedArtist);
+    }, [debouncedArtist, updateParam]);
+
     return (
         <div
             className="bg-gray-700 flex gap-7 lg:gap-10 justify-end text-slate-300 py-1 px-2 rounded-lg text-sm md:text-base"
@@ -39,8 +61,10 @@ export default function TrackSearchAndFilterBar({
                     <span>Select genre</span>
                     <div className="flex gap-2 items-center">
                         <select
-                            value={selectedGenre}
-                            onChange={(e) => setSelectedGenre(e.target.value)}
+                            value={genre}
+                            onChange={(e) =>
+                                updateParam(TRACK_PARAMS.GENRE, e.target.value)
+                            }
                             className="flex-1 p-2 rounded bg-gray-800 border border-gray-700"
                             data-testid="filter-genre"
                         >
@@ -60,8 +84,8 @@ export default function TrackSearchAndFilterBar({
             <div className="relative text-gray-400 focus-within:text-gray-200">
                 <input
                     type="text"
-                    value={searchArtistQuery}
-                    onChange={(e) => setSearchArtistQuery(e.target.value)}
+                    value={artist}
+                    onChange={(e) => setArtist(e.target.value)}
                     placeholder="Filter by Artist"
                     className="w-full bg-gray-700 text-white placeholder-gray-400 pl-1 pr-2 py-2 border-b-2 border-gray-500 ocus:border-gray-600  focus:outline-none transition"
                     data-testid="filter-artist"
@@ -74,8 +98,8 @@ export default function TrackSearchAndFilterBar({
                 </span>
                 <input
                     type="search"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
                     placeholder="Search"
                     className="w-full bg-gray-700 text-white placeholder-gray-400 pl-8 pr-2 py-2 border-b-2 border-gray-500 focus:border-gray-600 focus:outline-none transition"
                     data-testid="search-input"

@@ -1,80 +1,36 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { HiOutlineTrash } from 'react-icons/hi2';
 import toast from 'react-hot-toast';
 
-import useDebounce from '../hooks/useDebounce';
 import {
     useDeleteMultipleTracksMutation,
     useGetGenresQuery,
     useGetTracksQuery,
 } from '../services/api';
-import { SORT_DIRECTIONS } from '../constants/sorting';
 
 import TracksTable from '../components/TracksTable';
 import TracksModal from '../components/TracksModal';
 import TrackSearchAndFilterBar from '../components/TrackSearchAndFilterBar';
 import ConfirmationModal from '../components/ConfirmationModal';
 
-import {
-    type TracksSortOptions,
-    type TracksSortOrder,
-    type TracksParams,
-} from '../types/apiSchemas';
+import { useParsedTracksParams } from '../hooks/useParsedTracksParams';
+import { useAutoPaginationCorrection } from '../hooks/useAutoPaginationCorrection';
 
 export default function Tracks() {
-    const [activePage, setActivePage] = useState(1);
-    const [sortingColumn, setSortingColumn] = useState<TracksSortOptions | null>(null);
-    const [sortingOrder, setSortingOrder] = useState<TracksSortOrder>(
-        SORT_DIRECTIONS.ASC
-    );
-    const [searchQuery, setSearchQuery] = useState('');
-    const [searchArtistQuery, setSearchArtistQuery] = useState('');
-    const [selectedGenre, setSelectedGenre] = useState('');
-    const [selectedTracksIds, setSelectedTracksIds] = useState<string[]>([]);
+    const params = useParsedTracksParams();
 
-    const debouncedSearchQuery = useDebounce(searchQuery.trim(), 200);
-    const debouncedArtistSearchQuery = useDebounce(searchArtistQuery.trim(), 200);
-
-    const correctedPageRef = useRef(false);
-
-    let tracksQuearyParams: TracksParams = {
-        page: activePage,
-        search: debouncedSearchQuery,
-        artist: debouncedArtistSearchQuery,
-        genre: selectedGenre,
-    };
-
-    if (sortingColumn)
-        tracksQuearyParams = {
-            ...tracksQuearyParams,
-            sort: sortingColumn,
-            order: sortingOrder,
-        };
-
-    const { data: tracks, isFetching: isFetchingTracks } =
-        useGetTracksQuery(tracksQuearyParams);
+    const { data: tracks, isFetching: isFetchingTracks } = useGetTracksQuery(params);
     const { data: genres, isFetching: isFetchingGenres } = useGetGenresQuery();
     const [deleteMultipleTracks] = useDeleteMultipleTracksMutation();
+
+    const [selectedTracksIds, setSelectedTracksIds] = useState<string[]>([]);
+
+    useAutoPaginationCorrection(tracks, params.page, isFetchingTracks);
 
     //Clear selection on re-fetch, othervise to many issues to fix fast
     useEffect(() => {
         setSelectedTracksIds([]);
     }, [tracks]);
-
-    //Navigate to the previous page when deleting everytging on the current
-    useEffect(() => {
-        if (
-            tracks &&
-            tracks.data.length === 0 &&
-            activePage !== 1 &&
-            !correctedPageRef.current
-        ) {
-            correctedPageRef.current = true;
-            setActivePage((prev) => prev - 1);
-        } else if (tracks && tracks.data.length > 0) {
-            correctedPageRef.current = false;
-        }
-    }, [tracks, activePage]);
 
     const handleDeleteMultipleTracks = () => {
         deleteMultipleTracks(selectedTracksIds)
@@ -119,13 +75,7 @@ export default function Tracks() {
             </div>
             <div>
                 <TrackSearchAndFilterBar
-                    searchQuery={searchQuery}
-                    setSearchQuery={setSearchQuery}
                     genres={genres}
-                    selectedGenre={selectedGenre}
-                    setSelectedGenre={setSelectedGenre}
-                    searchArtistQuery={searchArtistQuery}
-                    setSearchArtistQuery={setSearchArtistQuery}
                     isFetchingGenres={isFetchingGenres}
                 />
             </div>
@@ -133,12 +83,6 @@ export default function Tracks() {
                 <TracksTable
                     tracks={tracks}
                     isFetchingTracks={isFetchingTracks}
-                    sortingColumn={sortingColumn}
-                    setSortingColumn={setSortingColumn}
-                    sortingOrder={sortingOrder}
-                    setSortingOrder={setSortingOrder}
-                    activePage={activePage}
-                    setActivePage={setActivePage}
                     selectedTracksIds={selectedTracksIds}
                     setSelectedTracksIds={setSelectedTracksIds}
                 />
