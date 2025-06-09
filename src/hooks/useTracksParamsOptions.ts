@@ -9,7 +9,7 @@ import {
 } from '../types/apiSchemas';
 import { TRACK_PARAMS } from '../constants/trackParams';
 
-interface UseQueryFilterProps {
+interface UseTracksParamsOptionsProps {
     searchOption: Belt.Option<string>;
     artistOption: Belt.Option<string>;
     genreOption: Belt.Option<string>;
@@ -18,7 +18,7 @@ interface UseQueryFilterProps {
     orderOption: Belt.Option<TracksSortOrder>;
 }
 
-export function useTracksQueryFilter(): UseQueryFilterProps {
+export function useTracksParamsOptions(): UseTracksParamsOptionsProps {
     const [searchParams] = useSearchParams();
 
     const getStringParam = (key: string) =>

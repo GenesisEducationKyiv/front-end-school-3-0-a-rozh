@@ -13,11 +13,11 @@ import TracksModal from '../components/TracksModal';
 import TrackSearchAndFilterBar from '../components/TrackSearchAndFilterBar';
 import ConfirmationModal from '../components/ConfirmationModal';
 
-import { useParsedTracksParams } from '../hooks/useParsedTracksParams';
+import { useTracksParamsParsed } from '../hooks/useTracksParamsParsed';
 import { useAutoPaginationCorrection } from '../hooks/useAutoPaginationCorrection';
 
 export default function Tracks() {
-    const params = useParsedTracksParams();
+    const params = useTracksParamsParsed();
 
     const { data: tracks, isFetching: isFetchingTracks } = useGetTracksQuery(params);
     const { data: genres, isFetching: isFetchingGenres } = useGetGenresQuery();

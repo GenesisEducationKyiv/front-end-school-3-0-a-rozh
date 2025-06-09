@@ -1,8 +1,8 @@
-import { useTracksQueryFilter } from './useTracksQueryFilter';
+import { useTracksParamsOptions } from './useTracksParamsOptions';
 import * as Belt from '@mobily/ts-belt';
 import { type TracksParams } from '../types/apiSchemas';
 
-export function useParsedTracksParams(): TracksParams {
+export function useTracksParamsParsed(): TracksParams {
     const {
         pageOption,
         searchOption,
@@ -10,7 +10,7 @@ export function useParsedTracksParams(): TracksParams {
         genreOption,
         sortOption,
         orderOption,
-    } = useTracksQueryFilter();
+    } = useTracksParamsOptions();
 
     const page = Belt.O.getWithDefault(pageOption, 1);
     const search = Belt.O.toUndefined(searchOption);
