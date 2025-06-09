@@ -5,7 +5,7 @@ import { useSearchParams } from 'react-router-dom';
 import { TRACK_PARAMS } from '../constants/trackParams';
 import { useCallback, useEffect, useState } from 'react';
 import useDebounce from '../hooks/useDebounce';
-import { useParsedTracksParams } from '../hooks/useParsedTracksParams';
+import { useTracksParamsParsed } from '../hooks/useTracksParamsParsed';
 
 interface TrackSearchAndFilterBarProps {
     genres?: string[];
@@ -19,7 +19,7 @@ export default function TrackSearchAndFilterBar({
     const [search, setSearch] = useState('');
     const [artist, setArtist] = useState('');
     const [searchParams, setSearchParams] = useSearchParams();
-    const { genre } = useParsedTracksParams();
+    const { genre } = useTracksParamsParsed();
 
     const debouncedSearch = useDebounce(search, 200);
     const debouncedArtist = useDebounce(artist, 200);

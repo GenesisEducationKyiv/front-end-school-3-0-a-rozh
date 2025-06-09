@@ -1,8 +1,6 @@
 import { useSearchParams } from 'react-router-dom';
 import * as Belt from '@mobily/ts-belt';
 import { pipe } from '@mobily/ts-belt';
-import { z } from 'zod';
-
 import {
     TracksSortOptions,
     TracksSortOptionsSchema,
@@ -30,13 +28,6 @@ export function useTracksParamsOptions(): UseTracksParamsOptionsProps {
             Belt.O.filter((v) => v.length > 0)
         );
 
-    const safeParsesToOption =
-        <T>(schema: z.ZodSchema<T>) =>
-        (value: string): Belt.Option<T> => {
-            const result = schema.safeParse(value);
-            return result.success ? Belt.O.fromNullable(result.data) : Belt.O.None;
-        };
-
     const searchOption = getStringParam(TRACK_PARAMS.SEARCH);
     const artistOption = getStringParam(TRACK_PARAMS.ARTIST);
     const genreOption = getStringParam(TRACK_PARAMS.GENRE);
@@ -48,12 +39,14 @@ export function useTracksParamsOptions(): UseTracksParamsOptionsProps {
 
     const sortOption = pipe(
         getStringParam(TRACK_PARAMS.SORT),
-        Belt.O.flatMap(safeParsesToOption(TracksSortOptionsSchema))
+        Belt.O.filter((v) => TracksSortOptionsSchema.safeParse(v).success),
+        Belt.O.mapNullable((v) => TracksSortOptionsSchema.parse(v))
     );
 
     const orderOption = pipe(
         getStringParam(TRACK_PARAMS.ORDER),
-        Belt.O.flatMap(safeParsesToOption(TracksSortOrderSchema))
+        Belt.O.filter((v) => TracksSortOrderSchema.safeParse(v).success),
+        Belt.O.mapNullable((v) => TracksSortOrderSchema.parse(v))
     );
 
     return {

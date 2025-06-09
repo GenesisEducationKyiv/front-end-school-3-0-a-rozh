@@ -7,7 +7,7 @@ import { SORT_DIRECTIONS, TRACK_FIELDS } from '../constants/';
 
 import { type TracksResponse, type TracksSortOptions } from '../types/apiSchemas';
 import { useSearchParams } from 'react-router-dom';
-import { useParsedTracksParams } from '../hooks/useParsedTracksParams';
+import { useTracksParamsParsed } from '../hooks/useTracksParamsParsed';
 import { TRACK_PARAMS } from '../constants/trackParams';
 
 interface TracksTableProps {
@@ -26,7 +26,7 @@ export default function TracksTable({
     const [playingTrackId, setPlayingTrackId] = useState<string | null>(null);
     const [searchParams, setSearchParams] = useSearchParams();
 
-    const { page, sort, order } = useParsedTracksParams();
+    const { page, sort, order } = useTracksParamsParsed();
 
     function setPage(page: number) {
         const newParams = new URLSearchParams(searchParams);
