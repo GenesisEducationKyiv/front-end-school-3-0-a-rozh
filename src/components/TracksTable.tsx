@@ -79,13 +79,10 @@ export default function TracksTable({
         }
     };
 
-    const isAllTracksSelected = !tracks
-        ? false
-        : tracks.data.length > 0
-        ? tracks.data
-              .map((track) => track.id)
-              .every((item) => selectedTracksIds.includes(item))
-        : false;
+    const isAllTracksSelected =
+        tracks && tracks.data.length
+            ? tracks.data.length === selectedTracksIds.length
+            : false;
 
     return (
         <div
