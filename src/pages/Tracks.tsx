@@ -16,6 +16,8 @@ import ConfirmationModal from '../components/ConfirmationModal';
 import { useTracksParamsParsed } from '../hooks/useTracksParamsParsed';
 import { useAutoPaginationCorrection } from '../hooks/useAutoPaginationCorrection';
 
+import { MESSAGES } from '../constants';
+
 export default function Tracks() {
     const params = useTracksParamsParsed();
 
@@ -35,8 +37,8 @@ export default function Tracks() {
     const handleDeleteMultipleTracks = () => {
         deleteMultipleTracks(selectedTracksIds)
             .unwrap()
-            .then(() => toast.success('Files deleted!'))
-            .catch(() => toast.error('Something went wrong.'));
+            .then(() => toast.success(MESSAGES.TRACKS_DELETED))
+            .catch(() => toast.error(MESSAGES.SOMETHING_WRONG));
         setSelectedTracksIds([]);
     };
 
@@ -47,7 +49,9 @@ export default function Tracks() {
                 {selectedTracksIds.length > 0 && (
                     <div className="flex gap-2 items-center">
                         <ConfirmationModal
-                            text={`Are you sure you want to delete ${selectedTracksIds.length} track(s)`}
+                            text={MESSAGES.CONFIRM_DELETE_TRACKS(
+                                selectedTracksIds.length
+                            )}
                             onConfirm={handleDeleteMultipleTracks}
                             trigger={
                                 <button className="bg-red-500 text-white px-3 py-3 flex items-center justify-center rounded hover:bg-red-300 cursor-pointer">
@@ -56,7 +60,9 @@ export default function Tracks() {
                             }
                         />
 
-                        <span className="text-slate-800">{`${selectedTracksIds.length} Track(s) selected`}</span>
+                        <span className="text-slate-800">
+                            {MESSAGES.TRACKS_SELECTED(selectedTracksIds.length)}
+                        </span>
                     </div>
                 )}
                 <div className="ml-auto">

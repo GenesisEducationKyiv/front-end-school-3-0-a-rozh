@@ -12,6 +12,8 @@ import ConfirmationModal from './ConfirmationModal';
 
 import { type Track } from '../types/apiSchemas';
 
+import { MESSAGES } from '../constants';
+
 interface TracksRowProps {
     track: Track;
     playingTrackId: string | null;
@@ -44,6 +46,7 @@ export default function TracksRow({
                         className="w-4 h-4 text-blue-600   rounded-sm  focus:ring-blue-600 ring-offset-gray-800 focus:ring-offset-gray-800 focus:ring-2 bg-gray-700 border-gray-600"
                         checked={isSelected}
                         onChange={() => handleSelectTrack(track.id)}
+                        data-testid={`checkbox-track-${track.id}`}
                     />
                     <label htmlFor="checkbox-table-search-1" className="sr-only">
                         checkbox
@@ -85,12 +88,12 @@ export default function TracksRow({
                             setPlayingTrackId={setPlayingTrackId}
                         />
                         <ConfirmationModal
-                            text="Are you sure you want to delete this file?"
+                            text={MESSAGES.CONFIRM_DELETE_FILE}
                             onConfirm={() =>
                                 deleteFile(track.id)
                                     .unwrap()
-                                    .then(() => toast.success('File deleted!'))
-                                    .catch(() => toast.error('Something went wrong.'))
+                                    .then(() => toast.success(MESSAGES.FILE_DELETED))
+                                    .catch(() => toast.error(MESSAGES.SOMETHING_WRONG))
                             }
                             trigger={
                                 <button className="bg-red-500 text-white w-6 h-6 flex items-center justify-center rounded-xs hover:bg-red-300 cursor-pointer">
@@ -132,12 +135,12 @@ export default function TracksRow({
                         slug={track.slug}
                     />
                     <ConfirmationModal
-                        text="Are you sure you want to delete this track?"
+                        text={MESSAGES.CONFIRM_DELETE_TRACK}
                         onConfirm={() =>
                             deleteTrack(track.id)
                                 .unwrap()
-                                .then(() => toast.success('Track deleted!'))
-                                .catch(() => toast.error('Something went wrong.'))
+                                .then(() => toast.success(MESSAGES.TRACK_DELETED))
+                                .catch(() => toast.error(MESSAGES.SOMETHING_WRONG))
                         }
                         trigger={
                             <button

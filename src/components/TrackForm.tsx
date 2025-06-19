@@ -14,6 +14,8 @@ import Label from './Label';
 import toast from 'react-hot-toast';
 import Spinner from './Spinner';
 
+import { MESSAGES } from '../constants';
+
 interface TrackFormProps {
     onClose: () => void;
     slug?: string;
@@ -122,7 +124,7 @@ export default function TrackForm({ onClose, slug }: TrackFormProps) {
             createTrack(formData)
                 .unwrap()
                 .then(() => {
-                    toast.success('Track created!');
+                    toast.success(MESSAGES.TRACK_CREATED);
                     onClose();
                 })
                 .catch(() => toast.error('Something went wrong.'));
@@ -265,6 +267,7 @@ export default function TrackForm({ onClose, slug }: TrackFormProps) {
                                     type="button"
                                     onClick={handleAddGenre}
                                     className="bg-teal-600 hover:bg-teal-700 px-4 py-2 rounded"
+                                    data-testid="add-genre-button"
                                 >
                                     +
                                 </button>
