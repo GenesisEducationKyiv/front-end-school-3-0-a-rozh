@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { HiOutlineTrash } from 'react-icons/hi2';
 import toast from 'react-hot-toast';
 
@@ -16,32 +15,38 @@ import AudioPlayer from '../components/AudioPlayer/AudioPlayer';
 
 import { useTracksParamsParsed } from '../hooks/useTracksParamsParsed';
 import { useAutoPaginationCorrection } from '../hooks/useAutoPaginationCorrection';
+import { useAppDispatch } from '../hooks/useAppDispatch';
 import { useAppSelector } from '../hooks/useAppSelector';
+
 import { selectPlayingTrackName } from '../store/features/audio/audioSelectors';
+import {
+    selectSelectedTracksCount,
+    selectSelectedTracksIds,
+} from '../store/features/tracks/trackSelectors';
+import { tracksActions } from '../store/features/tracks/tracksSlice';
 
 export default function Tracks() {
     const params = useTracksParamsParsed();
+    const dispatch = useAppDispatch();
     const playingTrackName = useAppSelector(selectPlayingTrackName);
 
     const { data: tracks, isFetching: isFetchingTracks } = useGetTracksQuery(params);
     const { data: genres, isFetching: isFetchingGenres } = useGetGenresQuery();
     const [deleteMultipleTracks] = useDeleteMultipleTracksMutation();
 
-    const [selectedTracksIds, setSelectedTracksIds] = useState<string[]>([]);
+    const selectedTracksIds = useAppSelector(selectSelectedTracksIds);
+    const selectedTracksCount = useAppSelector(selectSelectedTracksCount);
 
     useAutoPaginationCorrection(tracks, params.page, isFetchingTracks);
-
-    //Clear selection on re-fetch, othervise to many issues to fix fast
-    useEffect(() => {
-        setSelectedTracksIds([]);
-    }, [params.page]);
 
     const handleDeleteMultipleTracks = () => {
         deleteMultipleTracks(selectedTracksIds)
             .unwrap()
-            .then(() => toast.success('Files deleted!'))
+            .then(() => {
+                toast.success('Files deleted!');
+                dispatch(tracksActions.clearSelection());
+            })
             .catch(() => toast.error('Something went wrong.'));
-        setSelectedTracksIds([]);
     };
 
     return (
@@ -56,10 +61,10 @@ export default function Tracks() {
                 )}
             </div>
             <div className="flex w-full ">
-                {selectedTracksIds.length > 0 && (
+                {selectedTracksCount > 0 && (
                     <div className="flex gap-2 items-center">
                         <ConfirmationModal
-                            text={`Are you sure you want to delete ${selectedTracksIds.length} track(s)`}
+                            text={`Are you sure you want to delete ${selectedTracksCount} track(s)`}
                             onConfirm={handleDeleteMultipleTracks}
                             trigger={
                                 <button className="bg-red-500 text-white px-3 py-3 flex items-center justify-center rounded hover:bg-red-300 cursor-pointer">
@@ -68,7 +73,7 @@ export default function Tracks() {
                             }
                         />
 
-                        <span className="text-slate-800">{`${selectedTracksIds.length} Track(s) selected`}</span>
+                        <span className="text-slate-800">{`${selectedTracksCount} Track(s) selected`}</span>
                     </div>
                 )}
                 <div className="ml-auto">
@@ -92,12 +97,7 @@ export default function Tracks() {
                 />
             </div>
             <main>
-                <TracksTable
-                    tracks={tracks}
-                    isFetchingTracks={isFetchingTracks}
-                    selectedTracksIds={selectedTracksIds}
-                    setSelectedTracksIds={setSelectedTracksIds}
-                />
+                <TracksTable tracks={tracks} isFetchingTracks={isFetchingTracks} />
             </main>
         </div>
     );

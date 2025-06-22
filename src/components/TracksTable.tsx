@@ -1,30 +1,53 @@
-import { memo } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import TracksRow from './TracksRow';
 import SortingTableButton from './SortingTableButton';
 import Spinner from './Spinner';
+
 import { SORT_DIRECTIONS, TRACK_FIELDS, TRACK_PARAMS } from '../constants';
 
-import { type TracksResponse, type TracksSortOptions } from '../types/apiSchemas';
 import { useTracksParamsParsed } from '../hooks/useTracksParamsParsed';
+import { useAppDispatch } from '../hooks/useAppDispatch';
+import { useAppSelector } from '../hooks/useAppSelector';
+
+import {
+    selectAreAllPageTracksSelected,
+    selectAreSomePageTracksSelected,
+    selectSelectedTracksSet,
+} from '../store/features/tracks/trackSelectors';
+import { tracksActions } from '../store/features/tracks/tracksSlice';
+
+import { type TracksResponse, type TracksSortOptions } from '../types/apiSchemas';
 
 interface TracksTableProps {
     tracks: TracksResponse | undefined;
     isFetchingTracks: boolean;
-    selectedTracksIds: string[];
-    setSelectedTracksIds: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 const TracksTable = memo(function TracksTable({
     tracks,
     isFetchingTracks,
-    selectedTracksIds,
-    setSelectedTracksIds,
 }: TracksTableProps) {
     const [searchParams, setSearchParams] = useSearchParams();
+    const dispatch = useAppDispatch();
 
     const { page, sort, order } = useTracksParamsParsed();
+
+    const currentPageTrackIds = useMemo(
+        () => tracks?.data.map((track) => track.id) || [],
+        [tracks]
+    );
+
+    const selectedTracksSet = useAppSelector(selectSelectedTracksSet);
+    const areAllPageTracksSelected = selectAreAllPageTracksSelected(
+        Array.from(selectedTracksSet),
+        currentPageTrackIds
+    );
+    const areSomePageTracksSelected = selectAreSomePageTracksSelected(
+        Array.from(selectedTracksSet),
+        currentPageTrackIds
+    );
 
     function setPage(page: number) {
         const newParams = new URLSearchParams(searchParams);
@@ -52,35 +75,23 @@ const TracksTable = memo(function TracksTable({
         setSearchParams(newParams);
     }
 
-    const handleSelectAllTracks = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (tracks) {
-            const trackIds = tracks.data.map((track) => track.id);
+    const handleSelectAllTracks = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
             if (e.target.checked) {
-                setSelectedTracksIds((prev) => {
-                    const newTrackIds = trackIds.filter((track) => !prev.includes(track));
-                    return [...prev, ...newTrackIds];
-                });
+                dispatch(tracksActions.selectMultipleTracks(currentPageTrackIds));
+            } else {
+                dispatch(tracksActions.deselectMultipleTracks(currentPageTrackIds));
             }
-            if (!e.target.checked) {
-                setSelectedTracksIds((prev) =>
-                    prev.filter((track) => !trackIds.includes(track))
-                );
-            }
-        }
-    };
+        },
+        [dispatch, currentPageTrackIds]
+    );
 
-    const handleSelectTrack = (trackId: string) => {
-        if (selectedTracksIds.includes(trackId)) {
-            setSelectedTracksIds((prev) => prev.filter((id) => id !== trackId));
-        } else {
-            setSelectedTracksIds((prev) => [...prev, trackId]);
-        }
-    };
-
-    const isAllTracksSelected =
-        tracks && tracks.data.length
-            ? tracks.data.length === selectedTracksIds.length
-            : false;
+    const handleSelectTrack = useCallback(
+        (trackId: string) => {
+            dispatch(tracksActions.toggleTrackSelection(trackId));
+        },
+        [dispatch]
+    );
 
     return (
         <div
@@ -97,8 +108,13 @@ const TracksTable = memo(function TracksTable({
                                     id="checkbox-all-search"
                                     type="checkbox"
                                     className="w-4 h-4 text-blue-600  rounded-sm  focus:ring-blue-600 ring-offset-gray-800 focus:ring-offset-gray-800 focus:ring-2 bg-gray-700 border-gray-600"
-                                    checked={isAllTracksSelected}
+                                    checked={areAllPageTracksSelected}
                                     onChange={handleSelectAllTracks}
+                                    ref={(input) => {
+                                        if (input)
+                                            input.indeterminate =
+                                                areSomePageTracksSelected;
+                                    }}
                                 />
                                 <label htmlFor="checkbox-all-search" className="sr-only">
                                     checkbox
@@ -157,7 +173,7 @@ const TracksTable = memo(function TracksTable({
                             <TracksRow
                                 track={track}
                                 key={track.id}
-                                isSelected={selectedTracksIds.includes(track.id)}
+                                isSelected={selectedTracksSet.has(track.id)}
                                 handleSelectTrack={handleSelectTrack}
                             />
                         ))}
