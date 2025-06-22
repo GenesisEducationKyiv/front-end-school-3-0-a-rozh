@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { HiOutlinePencilSquare, HiOutlineTrash } from 'react-icons/hi2';
 import toast from 'react-hot-toast';
 
@@ -6,24 +6,24 @@ import { useDeleteFileMutation, useDeleteTrackMutation } from '../services/api';
 
 import Label from './Label';
 import TracksModal from './TracksModal';
-import AudioPlayer from './AudioPlayer';
+import PlayButton from './AudioPlayer/PlayButton';
+import TrackDuration from './AudioPlayer/TrackDuration';
 import UploadAudio from './UploadAudio';
 import ConfirmationModal from './ConfirmationModal';
+
+import { audioActions } from '../store/features/audio/audioSlice';
+import { useAppDispatch } from '../hooks/useAppDispatch';
 
 import { type Track } from '../types/apiSchemas';
 
 interface TracksRowProps {
     track: Track;
-    playingTrackId: string | null;
-    setPlayingTrackId: React.Dispatch<React.SetStateAction<string | null>>;
     isSelected: boolean;
     handleSelectTrack: (id: string) => void;
 }
 
-export default function TracksRow({
+const TracksRow = memo(function TracksRow({
     track,
-    playingTrackId,
-    setPlayingTrackId,
     isSelected,
     handleSelectTrack,
 }: TracksRowProps) {
@@ -31,6 +31,7 @@ export default function TracksRow({
     const [deleteTrack] = useDeleteTrackMutation();
     const [deleteFile] = useDeleteFileMutation();
     const cover = track.coverImage || '/images/default-cover.jpg';
+    const dispatch = useAppDispatch();
     return (
         <tr
             className="border-b bg-gray-800 border-gray-700   hover:bg-gray-600"
@@ -77,23 +78,20 @@ export default function TracksRow({
             {/* AUDIO FILE */}
             <td className="px-5 py-4">
                 {track.audioFile && (
-                    <div className="flex gap-2 items-center">
-                        <AudioPlayer
-                            id={track.id}
-                            fileName={track.audioFile}
-                            playingTrackId={playingTrackId}
-                            setPlayingTrackId={setPlayingTrackId}
-                        />
+                    <div className="flex gap-3 items-center">
+                        <PlayButton trackId={track.id} trackName={track.title} />
+                        <TrackDuration trackId={track.id} />
                         <ConfirmationModal
                             text="Are you sure you want to delete this file?"
-                            onConfirm={() =>
+                            onConfirm={() => {
+                                dispatch(audioActions.clearAudio());
                                 deleteFile(track.id)
                                     .unwrap()
                                     .then(() => toast.success('File deleted!'))
-                                    .catch(() => toast.error('Something went wrong.'))
-                            }
+                                    .catch(() => toast.error('Something went wrong.'));
+                            }}
                             trigger={
-                                <button className="bg-red-500 text-white w-6 h-6 flex items-center justify-center rounded-xs hover:bg-red-300 cursor-pointer">
+                                <button className="bg-red-500 text-white w-6 h-6 flex items-center justify-center rounded-xs hover:bg-red-300 cursor-pointer ml-auto">
                                     <HiOutlineTrash />
                                 </button>
                             }
@@ -152,4 +150,6 @@ export default function TracksRow({
             </td>
         </tr>
     );
-}
+});
+
+export default TracksRow;

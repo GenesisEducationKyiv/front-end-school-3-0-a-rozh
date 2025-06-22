@@ -12,12 +12,16 @@ import TracksTable from '../components/TracksTable';
 import TracksModal from '../components/TracksModal';
 import TrackSearchAndFilterBar from '../components/TrackSearchAndFilterBar';
 import ConfirmationModal from '../components/ConfirmationModal';
+import AudioPlayer from '../components/AudioPlayer/AudioPlayer';
 
 import { useTracksParamsParsed } from '../hooks/useTracksParamsParsed';
 import { useAutoPaginationCorrection } from '../hooks/useAutoPaginationCorrection';
+import { useAppSelector } from '../hooks/useAppSelector';
+import { selectPlayingTrackName } from '../store/features/audio/audioSelectors';
 
 export default function Tracks() {
     const params = useTracksParamsParsed();
+    const playingTrackName = useAppSelector(selectPlayingTrackName);
 
     const { data: tracks, isFetching: isFetchingTracks } = useGetTracksQuery(params);
     const { data: genres, isFetching: isFetchingGenres } = useGetGenresQuery();
@@ -30,7 +34,7 @@ export default function Tracks() {
     //Clear selection on re-fetch, othervise to many issues to fix fast
     useEffect(() => {
         setSelectedTracksIds([]);
-    }, [tracks]);
+    }, [params.page]);
 
     const handleDeleteMultipleTracks = () => {
         deleteMultipleTracks(selectedTracksIds)
@@ -43,6 +47,14 @@ export default function Tracks() {
     return (
         <div className="px-10 pb-10 pt-5 lg:px-15 flex flex-col gap-3  bg-slate-400 min-h-dvh">
             <div className="text-5xl text-slate-700 font-bold">Music Tracks</div>
+            <div className="flex items-center gap-2">
+                <AudioPlayer />
+                {playingTrackName && (
+                    <div className="text-slate-800">
+                        Now playing: <span className="font-bold">{playingTrackName}</span>
+                    </div>
+                )}
+            </div>
             <div className="flex w-full ">
                 {selectedTracksIds.length > 0 && (
                     <div className="flex gap-2 items-center">

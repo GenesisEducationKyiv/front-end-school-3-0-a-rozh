@@ -1,14 +1,13 @@
-import { useState } from 'react';
+import { memo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import TracksRow from './TracksRow';
 import SortingTableButton from './SortingTableButton';
 import Spinner from './Spinner';
-import { SORT_DIRECTIONS, TRACK_FIELDS } from '../constants/';
+import { SORT_DIRECTIONS, TRACK_FIELDS, TRACK_PARAMS } from '../constants';
 
 import { type TracksResponse, type TracksSortOptions } from '../types/apiSchemas';
-import { useSearchParams } from 'react-router-dom';
 import { useTracksParamsParsed } from '../hooks/useTracksParamsParsed';
-import { TRACK_PARAMS } from '../constants/trackParams';
 
 interface TracksTableProps {
     tracks: TracksResponse | undefined;
@@ -17,13 +16,12 @@ interface TracksTableProps {
     setSelectedTracksIds: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-export default function TracksTable({
+const TracksTable = memo(function TracksTable({
     tracks,
     isFetchingTracks,
     selectedTracksIds,
     setSelectedTracksIds,
 }: TracksTableProps) {
-    const [playingTrackId, setPlayingTrackId] = useState<string | null>(null);
     const [searchParams, setSearchParams] = useSearchParams();
 
     const { page, sort, order } = useTracksParamsParsed();
@@ -159,8 +157,6 @@ export default function TracksTable({
                             <TracksRow
                                 track={track}
                                 key={track.id}
-                                playingTrackId={playingTrackId}
-                                setPlayingTrackId={setPlayingTrackId}
                                 isSelected={selectedTracksIds.includes(track.id)}
                                 handleSelectTrack={handleSelectTrack}
                             />
@@ -262,4 +258,6 @@ export default function TracksTable({
             )}
         </div>
     );
-}
+});
+
+export default TracksTable;
