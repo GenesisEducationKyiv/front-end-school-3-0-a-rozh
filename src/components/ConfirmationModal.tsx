@@ -25,7 +25,7 @@ export default function ConfirmationModal({
         setIsOpen(false);
     };
     return (
-        <>
+        <div>
             {triggerWithHandler}
             <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
                 <div
@@ -56,6 +56,6 @@ export default function ConfirmationModal({
                     </div>
                 </div>
             </Modal>
-        </>
+        </div>
     );
 }
