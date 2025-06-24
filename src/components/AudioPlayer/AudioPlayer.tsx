@@ -1,21 +1,20 @@
 import React, { useEffect, useRef } from 'react';
 
 import { BASE_URL } from '../../services/api';
+import { isAudioElement } from '../../utils';
+
 import { audioActions } from '../../store/features/audio/audioSlice';
-import { formatTime, isAudioElement } from '../../utils';
-
-import PlayButton from './PlayButton';
-
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import {
-    selectDuration,
     selectVolume,
-    selectCurrentTime,
     selectIsPlaying,
     selectPlayingTrackId,
     selectPlayingTrackName,
 } from '../../store/features/audio/audioSelectors';
+
+import PlayButton from './PlayButton';
+import TrackProgress from './TrackProgress';
 
 export default function AudioPlayer() {
     const dispatch = useAppDispatch();
@@ -24,11 +23,7 @@ export default function AudioPlayer() {
     const playingTrackId = useAppSelector(selectPlayingTrackId);
     const playingTrackName = useAppSelector(selectPlayingTrackName);
     const isPlaying = useAppSelector(selectIsPlaying);
-    const currentTime = useAppSelector(selectCurrentTime);
-    const duration = useAppSelector(selectDuration);
     const volume = useAppSelector(selectVolume);
-
-    const progress = duration ? (currentTime / duration) * 100 : 0;
 
     useEffect(() => {
         const audio = audioRef.current;
@@ -100,18 +95,6 @@ export default function AudioPlayer() {
             audio.volume = volume;
         }
     }, [volume]);
-
-    const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!isAudioElement(audioRef.current) || !duration) return;
-
-        const rect = e.currentTarget.getBoundingClientRect();
-        const clickX = e.clientX - rect.left;
-        const newTime = (clickX / rect.width) * duration;
-
-        audioRef.current.currentTime = newTime;
-        dispatch(audioActions.setCurrentTime(newTime));
-    };
-
     const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newVolume = parseFloat(e.target.value);
         dispatch(audioActions.setVolume(newVolume));
@@ -123,24 +106,7 @@ export default function AudioPlayer() {
             data-testid="audio-player-top"
         >
             <PlayButton trackId={playingTrackId} trackName={playingTrackName} />
-
-            <div className="flex flex-col w-18 gap-0.5">
-                <div
-                    onClick={handleProgressClick}
-                    className="w-full h-1 bg-gray-200 rounded cursor-pointer relative"
-                >
-                    <div
-                        className="absolute top-0 left-0 h-full bg-blue-500"
-                        style={{ width: `${progress}%` }}
-                        data-testid="audio-progress-top"
-                    />
-                </div>
-
-                <div className="flex justify-between text-xs text-gray-600">
-                    <span>{formatTime(currentTime)}</span>
-                    <span>{formatTime(duration)}</span>
-                </div>
-            </div>
+            <TrackProgress />
 
             <input
                 type="range"
