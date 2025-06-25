@@ -16,6 +16,8 @@ import { useAppDispatch } from '../hooks/useAppDispatch';
 
 import { type Track } from '../types/apiSchemas';
 
+import { MESSAGES } from '../constants';
+
 interface TracksRowProps {
     track: Track;
     isSelected: boolean;
@@ -45,6 +47,7 @@ const TracksRow = memo(function TracksRow({
                         className="w-4 h-4 text-blue-600   rounded-sm  focus:ring-blue-600 ring-offset-gray-800 focus:ring-offset-gray-800 focus:ring-2 bg-gray-700 border-gray-600"
                         checked={isSelected}
                         onChange={() => handleSelectTrack(track.id)}
+                        data-testid={`checkbox-track-${track.id}`}
                     />
                     <label htmlFor="checkbox-table-search-1" className="sr-only">
                         checkbox
@@ -82,13 +85,13 @@ const TracksRow = memo(function TracksRow({
                         <PlayButton trackId={track.id} trackName={track.title} />
                         <TrackDuration trackId={track.id} />
                         <ConfirmationModal
-                            text="Are you sure you want to delete this file?"
+                            text={MESSAGES.CONFIRM_DELETE_FILE}
                             onConfirm={() => {
                                 dispatch(audioActions.clearAudio());
                                 deleteFile(track.id)
                                     .unwrap()
-                                    .then(() => toast.success('File deleted!'))
-                                    .catch(() => toast.error('Something went wrong.'));
+                                    .then(() => toast.success(MESSAGES.FILE_DELETED))
+                                    .catch(() => toast.error(MESSAGES.SOMETHING_WRONG));
                             }}
                             trigger={
                                 <button className="bg-red-500 text-white w-6 h-6 flex items-center justify-center rounded-xs hover:bg-red-300 cursor-pointer ml-auto">
@@ -130,12 +133,12 @@ const TracksRow = memo(function TracksRow({
                         slug={track.slug}
                     />
                     <ConfirmationModal
-                        text="Are you sure you want to delete this track?"
+                        text={MESSAGES.CONFIRM_DELETE_TRACK}
                         onConfirm={() =>
                             deleteTrack(track.id)
                                 .unwrap()
-                                .then(() => toast.success('Track deleted!'))
-                                .catch(() => toast.error('Something went wrong.'))
+                                .then(() => toast.success(MESSAGES.TRACK_DELETED))
+                                .catch(() => toast.error(MESSAGES.SOMETHING_WRONG))
                         }
                         trigger={
                             <button

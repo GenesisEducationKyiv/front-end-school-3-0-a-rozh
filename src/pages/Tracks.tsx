@@ -25,6 +25,8 @@ import {
 } from '../store/features/tracks/trackSelectors';
 import { tracksActions } from '../store/features/tracks/tracksSlice';
 
+import { MESSAGES } from '../constants';
+
 export default function Tracks() {
     const params = useTracksParamsParsed();
     const dispatch = useAppDispatch();
@@ -43,10 +45,10 @@ export default function Tracks() {
         deleteMultipleTracks(selectedTracksIds)
             .unwrap()
             .then(() => {
-                toast.success('Files deleted!');
+                toast.success(MESSAGES.TRACKS_DELETED);
                 dispatch(tracksActions.clearSelection());
             })
-            .catch(() => toast.error('Something went wrong.'));
+            .catch(() => toast.error(MESSAGES.SOMETHING_WRONG));
     };
 
     return (
@@ -64,7 +66,7 @@ export default function Tracks() {
                 {selectedTracksCount > 0 && (
                     <div className="flex gap-2 items-center">
                         <ConfirmationModal
-                            text={`Are you sure you want to delete ${selectedTracksCount} track(s)`}
+                            text={MESSAGES.CONFIRM_DELETE_TRACKS(selectedTracksCount)}
                             onConfirm={handleDeleteMultipleTracks}
                             trigger={
                                 <button className="bg-red-500 text-white px-3 py-3 flex items-center justify-center rounded hover:bg-red-300 cursor-pointer">
@@ -73,7 +75,9 @@ export default function Tracks() {
                             }
                         />
 
-                        <span className="text-slate-800">{`${selectedTracksCount} Track(s) selected`}</span>
+                        <span className="text-slate-800">
+                            {MESSAGES.TRACKS_SELECTED(selectedTracksCount)}
+                        </span>
                     </div>
                 )}
                 <div className="ml-auto">
