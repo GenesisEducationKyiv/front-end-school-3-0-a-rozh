@@ -61,8 +61,10 @@ export default function AudioPlayer() {
     useEffect(() => {
         const audio = audioRef.current;
         if (!isAudioElement(audio)) return;
-
-        if (playingTrackId) {
+        if (!playingTrackId) {
+            audio.pause();
+            audio.currentTime = 0;
+        } else {
             audio.load();
         }
     }, [playingTrackId]);
@@ -106,7 +108,7 @@ export default function AudioPlayer() {
             data-testid="audio-player-top"
         >
             <PlayButton trackId={playingTrackId} trackName={playingTrackName} />
-            <TrackProgress />
+            <TrackProgress audioRef={audioRef} />
 
             <input
                 type="range"

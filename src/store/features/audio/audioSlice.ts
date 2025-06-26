@@ -7,6 +7,7 @@ interface AudioState {
     currentTime: number;
     duration: number;
     volume: number;
+    isRadioPlaying: boolean;
 }
 
 const initialState: AudioState = {
@@ -16,6 +17,7 @@ const initialState: AudioState = {
     currentTime: 0,
     duration: 0,
     volume: 1,
+    isRadioPlaying: false,
 };
 
 const audioSlice = createSlice({
@@ -46,6 +48,9 @@ const audioSlice = createSlice({
             state.isPlaying = false;
             state.currentTime = 0;
             state.duration = 0;
+        },
+        setIsRadioPlaying: (state, action: PayloadAction<boolean>) => {
+            state.isRadioPlaying = action.payload;
         },
     },
 });

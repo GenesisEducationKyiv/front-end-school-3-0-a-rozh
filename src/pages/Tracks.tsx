@@ -18,7 +18,10 @@ import { useAutoPaginationCorrection } from '../hooks/useAutoPaginationCorrectio
 import { useAppDispatch } from '../hooks/useAppDispatch';
 import { useAppSelector } from '../hooks/useAppSelector';
 
-import { selectPlayingTrackName } from '../store/features/audio/audioSelectors';
+import {
+    selectIsRadioPlaying,
+    selectPlayingTrackName,
+} from '../store/features/audio/audioSelectors';
 import {
     selectSelectedTracksCount,
     selectSelectedTracksIds,
@@ -26,14 +29,21 @@ import {
 import { tracksActions } from '../store/features/tracks/tracksSlice';
 
 import { MESSAGES } from '../constants';
+import { useRadioWebSocket } from '../hooks/useRadioWebSocket';
+import Spinner from '../components/Spinner';
 
 export default function Tracks() {
     const params = useTracksParamsParsed();
     const dispatch = useAppDispatch();
+
     const playingTrackName = useAppSelector(selectPlayingTrackName);
+    const isRadioPlaying = useAppSelector(selectIsRadioPlaying);
 
     const { data: tracks, isFetching: isFetchingTracks } = useGetTracksQuery(params);
     const { data: genres, isFetching: isFetchingGenres } = useGetGenresQuery();
+
+    const { handleStartRadio, handleStopRadio, isFetching, isConnected } =
+        useRadioWebSocket();
     const [deleteMultipleTracks] = useDeleteMultipleTracksMutation();
 
     const selectedTracksIds = useAppSelector(selectSelectedTracksIds);
@@ -55,6 +65,25 @@ export default function Tracks() {
         <div className="px-10 pb-10 pt-5 lg:px-15 flex flex-col gap-3  bg-slate-400 min-h-dvh">
             <div className="text-5xl text-slate-700 font-bold">Music Tracks</div>
             <div className="flex items-center gap-2">
+                <button
+                    className={`text-white font-medium rounded-lg text-sm px-4 py-1.5 text-center ${
+                        isRadioPlaying
+                            ? 'bg-red-500 hover:bg-red-400'
+                            : 'bg-teal-600 hover:bg-teal-700'
+                    } focus:outline-none focus:ring-2 focus:ring-gray-400 cursor-pointer w-30 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed`}
+                    data-testid="start-radio-button"
+                    onClick={isRadioPlaying ? handleStopRadio : handleStartRadio}
+                    disabled={!isConnected}
+                >
+                    {isFetching ? (
+                        <Spinner size="small" />
+                    ) : isRadioPlaying ? (
+                        'Stop Radio'
+                    ) : (
+                        'Start Radio'
+                    )}
+                </button>
+
                 <AudioPlayer />
                 {playingTrackName && (
                     <div className="text-slate-800">
