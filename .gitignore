@@ -27,3 +27,9 @@ playwright-report/
 *.njsproj
 *.sln
 *.sw?
+
+# Bundle report
+bundle-report.html
+
+# TS build info
+tsconfig.tsbuildinfo
