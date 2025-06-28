@@ -12,7 +12,7 @@
         "test:e2e:headed": "playwright test --headed -c playwright.config.ts",
         "test:ct": "playwright test -c playwright-ct.config.ts",
         "test:ct:ui": "playwright test --ui -c playwright-ct.config.ts",
-        "build": "tsc -b && vite build",
+        "build": "vite build && echo 'Uploading source maps...' && echo 'sentry-cli upload-sourcemaps ./dist' && find dist -name '*.map' -delete",
         "lint": "eslint .",
         "preview": "vite preview"
     },
