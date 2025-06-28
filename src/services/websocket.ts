@@ -1,6 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 
-export const WEBSOCKET_URL = 'http://localhost:8000';
+export const WEBSOCKET_URL = import.meta.env.VITE_WEBSOCKET_URL;
 
 class WebSocketService {
     private socket: Socket | null = null;
