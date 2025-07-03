@@ -14,7 +14,8 @@
         "test:ct:ui": "playwright test --ui -c playwright-ct.config.ts",
         "build": "tsc -b && vite build",
         "lint": "eslint .",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "type-check": "tsc --noEmit"
     },
     "dependencies": {
         "@mobily/ts-belt": "^3.13.1",
