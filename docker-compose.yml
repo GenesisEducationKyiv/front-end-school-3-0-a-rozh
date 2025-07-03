@@ -1,9 +1,0 @@
-services:
-    music-tracks-gen:
-        image: music-tracks-gen
-        build:
-            context: .
-            dockerfile: Dockerfile
-        ports:
-            - '3000:3000'
-        container_name: music-tracks-gen
