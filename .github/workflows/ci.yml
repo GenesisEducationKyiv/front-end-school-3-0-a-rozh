@@ -85,7 +85,7 @@ jobs:
     docker:
         name: Build Docker Image
         runs-on: ubuntu-latest
-        needs: build
+        needs: [build, unit-testing]
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
