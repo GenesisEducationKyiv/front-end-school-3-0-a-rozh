@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { HiOutlineTrash } from 'react-icons/hi2';
 import toast from 'react-hot-toast';
 
@@ -12,46 +11,62 @@ import TracksTable from '../components/TracksTable';
 import TracksModal from '../components/TracksModal';
 import TrackSearchAndFilterBar from '../components/TrackSearchAndFilterBar';
 import ConfirmationModal from '../components/ConfirmationModal';
+import AudioPlayer from '../components/AudioPlayer/AudioPlayer';
 
 import { useTracksParamsParsed } from '../hooks/useTracksParamsParsed';
 import { useAutoPaginationCorrection } from '../hooks/useAutoPaginationCorrection';
+import { useAppDispatch } from '../hooks/useAppDispatch';
+import { useAppSelector } from '../hooks/useAppSelector';
+
+import { selectPlayingTrackName } from '../store/features/audio/audioSelectors';
+import {
+    selectSelectedTracksCount,
+    selectSelectedTracksIds,
+} from '../store/features/tracks/trackSelectors';
+import { tracksActions } from '../store/features/tracks/tracksSlice';
 
 import { MESSAGES } from '../constants';
 
 export default function Tracks() {
     const params = useTracksParamsParsed();
+    const dispatch = useAppDispatch();
+    const playingTrackName = useAppSelector(selectPlayingTrackName);
 
     const { data: tracks, isFetching: isFetchingTracks } = useGetTracksQuery(params);
     const { data: genres, isFetching: isFetchingGenres } = useGetGenresQuery();
     const [deleteMultipleTracks] = useDeleteMultipleTracksMutation();
 
-    const [selectedTracksIds, setSelectedTracksIds] = useState<string[]>([]);
+    const selectedTracksIds = useAppSelector(selectSelectedTracksIds);
+    const selectedTracksCount = useAppSelector(selectSelectedTracksCount);
 
     useAutoPaginationCorrection(tracks, params.page, isFetchingTracks);
-
-    //Clear selection on re-fetch, othervise to many issues to fix fast
-    useEffect(() => {
-        setSelectedTracksIds([]);
-    }, [tracks]);
 
     const handleDeleteMultipleTracks = () => {
         deleteMultipleTracks(selectedTracksIds)
             .unwrap()
-            .then(() => toast.success(MESSAGES.TRACKS_DELETED))
+            .then(() => {
+                toast.success(MESSAGES.TRACKS_DELETED);
+                dispatch(tracksActions.clearSelection());
+            })
             .catch(() => toast.error(MESSAGES.SOMETHING_WRONG));
-        setSelectedTracksIds([]);
     };
 
     return (
         <div className="px-10 pb-10 pt-5 lg:px-15 flex flex-col gap-3  bg-slate-400 min-h-dvh">
             <div className="text-5xl text-slate-700 font-bold">Music Tracks</div>
+            <div className="flex items-center gap-2">
+                <AudioPlayer />
+                {playingTrackName && (
+                    <div className="text-slate-800">
+                        Now playing: <span className="font-bold">{playingTrackName}</span>
+                    </div>
+                )}
+            </div>
             <div className="flex w-full ">
-                {selectedTracksIds.length > 0 && (
+                {selectedTracksCount > 0 && (
                     <div className="flex gap-2 items-center">
                         <ConfirmationModal
-                            text={MESSAGES.CONFIRM_DELETE_TRACKS(
-                                selectedTracksIds.length
-                            )}
+                            text={MESSAGES.CONFIRM_DELETE_TRACKS(selectedTracksCount)}
                             onConfirm={handleDeleteMultipleTracks}
                             trigger={
                                 <button className="bg-red-500 text-white px-3 py-3 flex items-center justify-center rounded hover:bg-red-300 cursor-pointer">
@@ -61,7 +76,7 @@ export default function Tracks() {
                         />
 
                         <span className="text-slate-800">
-                            {MESSAGES.TRACKS_SELECTED(selectedTracksIds.length)}
+                            {MESSAGES.TRACKS_SELECTED(selectedTracksCount)}
                         </span>
                     </div>
                 )}
@@ -86,12 +101,7 @@ export default function Tracks() {
                 />
             </div>
             <main>
-                <TracksTable
-                    tracks={tracks}
-                    isFetchingTracks={isFetchingTracks}
-                    selectedTracksIds={selectedTracksIds}
-                    setSelectedTracksIds={setSelectedTracksIds}
-                />
+                <TracksTable tracks={tracks} isFetchingTracks={isFetchingTracks} />
             </main>
         </div>
     );
