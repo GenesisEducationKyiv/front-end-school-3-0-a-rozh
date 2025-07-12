@@ -1,10 +1,11 @@
-import { HiOutlineSearch } from 'react-icons/hi';
+import { useCallback, useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import Spinner from './Spinner';
-import { useSearchParams } from 'react-router-dom';
-import { TRACK_PARAMS } from '../constants/trackParams';
-import { useCallback, useEffect, useState } from 'react';
+import SearchBar from './SearchBar/SearchBar';
+
 import useDebounce from '../hooks/useDebounce';
+import { TRACK_PARAMS } from '../constants/trackParams';
 import { useTracksParamsParsed } from '../hooks/useTracksParamsParsed';
 
 interface TrackSearchAndFilterBarProps {
@@ -92,19 +93,11 @@ export default function TrackSearchAndFilterBar({
                 />
             </div>
             {/* SEARCH */}
-            <div className="relative text-gray-400 focus-within:text-gray-200">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none">
-                    <HiOutlineSearch className="h-5 w-5" />
-                </span>
-                <input
-                    type="search"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search"
-                    className="w-full bg-gray-700 text-white placeholder-gray-400 pl-8 pr-2 py-2 border-b-2 border-gray-500 focus:border-gray-600 focus:outline-none transition"
-                    data-testid="search-input"
-                />
-            </div>
+            <SearchBar
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                data-testid="search-input"
+            />
         </div>
     );
 }

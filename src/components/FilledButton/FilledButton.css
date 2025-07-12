@@ -1,0 +1,82 @@
+/* BASE STYLES */
+.m3-button {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-md);
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--letter-spacing-wide);
+    line-height: var(--line-height-6);
+    cursor: pointer;
+    transition: var(--transition-colors);
+}
+
+.size-small {
+    padding: var(--space-sm) var(--space-xl);
+    font-size: var(--text-sm);
+}
+
+.size-medium {
+    padding: var(--space-md) var(--space-2xl);
+    font-size: var(--text-base);
+}
+
+.size-large {
+    padding: var(--space-lg) var(--space-3xl);
+    font-size: var(--text-lg);
+}
+
+.color-primary {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+}
+
+.color-primary:hover:not(:disabled),
+.color-primary:focus-visible:not(:disabled),
+.color-primary:active:not(:disabled) {
+    background-color: var(--color-primary-hover);
+}
+
+.color-accept {
+    background-color: var(--color-success);
+    color: var(--color-white);
+}
+
+.color-accept:hover:not(:disabled),
+.color-accept:focus-visible:not(:disabled),
+.color-accept:active:not(:disabled) {
+    background-color: var(--color-success-hover);
+}
+
+.color-reject {
+    background-color: var(--color-error);
+    color: var(--color-white);
+}
+
+.color-reject:hover:not(:disabled),
+.color-reject:focus-visible:not(:disabled),
+.color-reject:active:not(:disabled) {
+    background-color: var(--color-error-hover);
+}
+
+.m3-button:disabled {
+    background-color: var(--color-neutral-light);
+    color: var(--color-neutral);
+    cursor: not-allowed;
+}
+
+.m3-icon {
+    width: var(--space-3xl);
+    height: var(--space-3xl);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.m3-label {
+    display: flex;
+    align-items: center;
+}
