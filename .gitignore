@@ -28,6 +28,9 @@ playwright-report/
 *.sln
 *.sw?
 
+# TypeScript
+tsconfig.tsbuildinfo
+
 # Bundle report
 bundle-report.html
 

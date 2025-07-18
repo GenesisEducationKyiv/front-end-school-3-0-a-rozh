@@ -14,7 +14,8 @@
         "test:ct:ui": "playwright test --ui -c playwright-ct.config.ts",
         "build": "vite build && echo 'Uploading source maps...' && echo 'sentry-cli upload-sourcemaps ./dist' && find dist -name '*.map' -delete",
         "lint": "eslint .",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "type-check": "tsc --noEmit"
     },
     "dependencies": {
         "@mobily/ts-belt": "^3.13.1",
