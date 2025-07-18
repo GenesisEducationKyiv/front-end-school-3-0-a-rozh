@@ -23,6 +23,16 @@ export default defineConfig(({ mode }) => {
         },
         build: {
             sourcemap: true,
+            rollupOptions: {
+                output: {
+                    manualChunks: {
+                        vendor: ['react', 'react-dom'],
+                        redux: ['@reduxjs/toolkit', 'react-redux'],
+                        router: ['react-router-dom'],
+                        socketio: ['socket.io-client'],
+                    },
+                },
+            },
         },
     };
 });

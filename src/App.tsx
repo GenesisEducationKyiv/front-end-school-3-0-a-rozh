@@ -1,3 +1,4 @@
+import { lazy } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { Provider } from 'react-redux';
 
@@ -5,7 +6,8 @@ import { store } from './store/store';
 
 import Tracks from './pages/Tracks';
 import CustomToaster from './components/CustomToaster';
-import PageNotFound from './pages/PageNotFound';
+
+const PageNotFound = lazy(() => import('./pages/PageNotFound'));
 
 function App() {
     return (

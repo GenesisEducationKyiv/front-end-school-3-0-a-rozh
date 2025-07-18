@@ -32,7 +32,7 @@ const TracksRow = memo(function TracksRow({
     const [fileError, setFileError] = useState<string | null>(null);
     const [deleteTrack] = useDeleteTrackMutation();
     const [deleteFile] = useDeleteFileMutation();
-    const cover = track.coverImage || '/images/default-cover.jpg';
+    const cover = track.coverImage || '/images/default-cover.webp';
     const dispatch = useAppDispatch();
     return (
         <tr
@@ -57,9 +57,11 @@ const TracksRow = memo(function TracksRow({
 
             <td className="px-6 py-4">
                 <img
-                    className="w-20 object-cover"
+                    className="object-cover"
                     src={cover}
                     alt={`${track.title} song cover image`}
+                    width={80}
+                    height={80}
                 />
             </td>
             <td className="px-6 py-4" data-testid={`track-item-${track.id}-title`}>
