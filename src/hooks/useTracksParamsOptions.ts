@@ -1,6 +1,5 @@
+import { O, pipe } from '@mobily/ts-belt';
 import { useSearchParams } from 'react-router-dom';
-import * as Belt from '@mobily/ts-belt';
-import { pipe } from '@mobily/ts-belt';
 import { z } from 'zod';
 
 import {
@@ -12,12 +11,12 @@ import {
 import { TRACK_PARAMS } from '../constants/trackParams';
 
 interface UseTracksParamsOptionsProps {
-    searchOption: Belt.Option<string>;
-    artistOption: Belt.Option<string>;
-    genreOption: Belt.Option<string>;
-    pageOption: Belt.Option<number>;
-    sortOption: Belt.Option<TracksSortOptions>;
-    orderOption: Belt.Option<TracksSortOrder>;
+    searchOption: O.Option<string>;
+    artistOption: O.Option<string>;
+    genreOption: O.Option<string>;
+    pageOption: O.Option<number>;
+    sortOption: O.Option<TracksSortOptions>;
+    orderOption: O.Option<TracksSortOrder>;
 }
 
 export function useTracksParamsOptions(): UseTracksParamsOptionsProps {
@@ -25,16 +24,16 @@ export function useTracksParamsOptions(): UseTracksParamsOptionsProps {
 
     const getStringParam = (key: string) =>
         pipe(
-            Belt.O.fromNullable(searchParams.get(key)),
-            Belt.O.map((v) => v.trim().toLowerCase()),
-            Belt.O.filter((v) => v.length > 0)
+            O.fromNullable(searchParams.get(key)),
+            O.map((v) => v.trim().toLowerCase()),
+            O.filter((v) => v.length > 0)
         );
 
     const safeParsesToOption =
         <T>(schema: z.ZodSchema<T>) =>
-        (value: string): Belt.Option<T> => {
+        (value: string): O.Option<T> => {
             const result = schema.safeParse(value);
-            return result.success ? Belt.O.fromNullable(result.data) : Belt.O.None;
+            return result.success ? O.fromNullable(result.data) : O.None;
         };
 
     const searchOption = getStringParam(TRACK_PARAMS.SEARCH);
@@ -42,18 +41,18 @@ export function useTracksParamsOptions(): UseTracksParamsOptionsProps {
     const genreOption = getStringParam(TRACK_PARAMS.GENRE);
     const pageOption = pipe(
         getStringParam(TRACK_PARAMS.PAGE),
-        Belt.O.map(Number),
-        Belt.O.filter((v) => v > 0 && isFinite(v))
+        O.map(Number),
+        O.filter((v) => v > 0 && isFinite(v))
     );
 
     const sortOption = pipe(
         getStringParam(TRACK_PARAMS.SORT),
-        Belt.O.flatMap(safeParsesToOption(TracksSortOptionsSchema))
+        O.flatMap(safeParsesToOption(TracksSortOptionsSchema))
     );
 
     const orderOption = pipe(
         getStringParam(TRACK_PARAMS.ORDER),
-        Belt.O.flatMap(safeParsesToOption(TracksSortOrderSchema))
+        O.flatMap(safeParsesToOption(TracksSortOrderSchema))
     );
 
     return {

@@ -12,7 +12,7 @@ import {
     GenresSchema,
 } from '../types/apiSchemas';
 
-export const BASE_URL = 'http://localhost:8000/api/';
+export const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const validateResponse = <T>(schema: z.ZodSchema<T>, data: unknown): T => {
     try {

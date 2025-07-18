@@ -27,3 +27,15 @@ playwright-report/
 *.njsproj
 *.sln
 *.sw?
+
+# Bundle report
+bundle-report.html
+
+# TS build info
+tsconfig.tsbuildinfo
+
+# Environment files
+.env.local
+.env.dev.local
+.env.staging.local
+.env.production.local
