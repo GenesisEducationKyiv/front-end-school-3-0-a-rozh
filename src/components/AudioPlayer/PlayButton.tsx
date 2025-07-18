@@ -5,6 +5,7 @@ import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import {
     selectIsPlaying,
+    selectIsRadioPlaying,
     selectPlayingTrackId,
 } from '../../store/features/audio/audioSelectors';
 
@@ -18,6 +19,7 @@ export default function PlayButton({ trackId, trackName }: PlayButtonProps) {
 
     const playingTrackId = useAppSelector(selectPlayingTrackId);
     const isPlaying = useAppSelector(selectIsPlaying);
+    const isRadioPlaying = useAppSelector(selectIsRadioPlaying);
 
     const isActive = playingTrackId === trackId;
 
@@ -39,8 +41,8 @@ export default function PlayButton({ trackId, trackName }: PlayButtonProps) {
                     ? `pause-button-${trackId}`
                     : `play-button-${trackId}`
             }
-            className="text-black text-sm px-1.5 py-1 bg-gray-200 rounded hover:bg-gray-300"
-            disabled={!trackId}
+            className="text-black text-sm px-1.5 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={!trackId || isRadioPlaying}
         >
             {isActive && isPlaying ? <HiOutlinePause /> : <HiOutlinePlay />}
         </button>

@@ -1,5 +1,3 @@
-import { useRef } from 'react';
-
 import { formatTime } from '../../utils/helpers';
 import { isAudioElement } from '../../utils/typeGuards';
 
@@ -9,19 +7,23 @@ import { useAppSelector } from '../../hooks/useAppSelector';
 import {
     selectCurrentTime,
     selectDuration,
+    selectIsRadioPlaying,
 } from '../../store/features/audio/audioSelectors';
 
-export default function TrackProgress() {
+export default function TrackProgress({
+    audioRef,
+}: {
+    audioRef: React.RefObject<HTMLAudioElement>;
+}) {
     const currentTime = useAppSelector(selectCurrentTime);
     const duration = useAppSelector(selectDuration);
+    const isRadioPlaying = useAppSelector(selectIsRadioPlaying);
     const dispatch = useAppDispatch();
-
-    const audioRef = useRef<HTMLAudioElement | null>(null);
 
     const progress = duration ? (currentTime / duration) * 100 : 0;
 
     const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!isAudioElement(audioRef.current) || !duration) return;
+        if (!isAudioElement(audioRef.current) || !duration || isRadioPlaying) return;
 
         const rect = e.currentTarget.getBoundingClientRect();
         const clickX = e.clientX - rect.left;
@@ -38,7 +40,9 @@ export default function TrackProgress() {
                 className="w-full h-1 bg-gray-200 rounded cursor-pointer relative"
             >
                 <div
-                    className="absolute top-0 left-0 h-full bg-blue-500"
+                    className={`absolute top-0 left-0 h-full ${
+                        isRadioPlaying ? 'bg-blue-500 opacity-70' : 'bg-blue-500'
+                    }`}
                     style={{ width: `${progress}%` }}
                     data-testid="audio-progress-top"
                 />
