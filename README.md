@@ -1,50 +1,154 @@
-# React + TypeScript + Vite
+# Music Tracks Manager — React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project is a music tracks management interface built with **React**, **TypeScript**, **Vite** and **Tailwind CSS** for styling.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Tech Stack
 
-## Expanding the ESLint configuration
+-   [React](https://reactjs.org/)
+-   [Vite](https://vitejs.dev/)
+-   [TypeScript](https://www.typescriptlang.org/)
+-   [Tailwind CSS](https://tailwindcss.com/)
+-   [Redux Toolkit](https://redux-toolkit.js.org/)
+-   [socket.io-client](https://www.npmjs.com/package/socket.io-client)
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+---
 
-- Configure the top-level `parserOptions` property like this:
+## Development
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+### Install dependencies
+
+```bash
+npm install
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+### Run the app locally
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+```bash
+npm run dev
 ```
+
+### Build for production
+
+```bash
+npm run build
+```
+
+> **Source maps** are enabled, but to simulate real world application - removed after fake upload to sentry as an example
+
+---
+
+## Testing
+
+The project includes examples of testing with unit, integration, and end-to-end tests.
+
+### Test Stack
+
+-   **[Vitest](https://vitest.dev/)** - Unit and integration testing
+-   **[Playwright](https://playwright.dev/)** - E2E and component testing
+-   **[Testing Library](https://testing-library.com/)** - React component testing utilities
+-   **[MSW](https://mswjs.io/)** - API mocking for integration tests
+
+### Running Tests
+
+```bash
+# Unit and integration tests
+npm test
+
+# E2E tests (headless)
+npm run test:e2e
+
+# E2E tests with browser UI
+npm run test:e2e:ui
+
+# E2E tests in headed mode (visible browser)
+npm run test:e2e:headed
+
+# Component tests
+npm run test:ct
+
+# Component tests with UI
+npm run test:ct:ui
+```
+
+### Test Files Location
+
+-   **Unit tests**: `src/**/__tests__/*.test.tsx`
+-   **Integration tests**: `__tests__/integration/*.test.ts`
+-   **Component tests**: `src/components/__tests__/*.spec.tsx`
+-   **E2E tests**: `__tests__/e2e/*.spec.ts`
+
+---
+
+## Bundle Analysis
+
+The project uses \`rollup-plugin-visualizer\` to analyze bundle contents.
+
+After building:
+
+```bash
+npm run build
+```
+
+A `bundle-report.html` will be generated and opened automatically.
+
+---
+
+## Environment Configuration
+
+Use a \`.env\` file to configure varables (totally secret data that should not be in this README, for testing):
+
+```env
+VITE_API_BASE_URL=http://localhost:8000/api/
+VITE_WEBSOCKET_URL=http://localhost:8000
+VITE_PORT=3000
+```
+
+---
+
+## Security
+
+### Dependency Security Auditing
+
+#### Snyk - Vulnerability Scanning
+
+```bash
+# Install Snyk globally
+npm install -g snyk
+
+# Scan for known vulnerabilities
+npx snyk test
+
+# Monitor project for new vulnerabilities
+npx snyk monitor
+```
+
+#### Socket.dev - Behavioral Analysis
+
+```bash
+# Secure package installation
+npx socket install
+
+# Scan existing dependencies
+npx socket scan
+```
+
+### Security Reports
+
+See [security audit documentation](./docs/security-audits/) for detailed dependency analysis.
+
+---
+
+## Architecture Decision Records (ADR)
+
+This project maintains Architecture Decision Records to document important architectural choices and their rationale.
+
+### Available ADRs
+
+-   **[ADR-0001](./docs/adr/0001-organize-api-layer-by-feature.md)** - Organize API layer by feature
+-   **[ADR-0002](./docs/adr/0002-extract-business-logic.md)** - Extract business logic
+-   **[ADR-0003](./docs/adr/0003-implement-environment-configuration.md)** - Implement environment configuration
+-   **[ADR-0004](./docs/adr/0004-add-testing-framework.md)** - Add testing framework
+
+See the [ADR directory](./docs/adr/) for complete documentation of architectural decisions.

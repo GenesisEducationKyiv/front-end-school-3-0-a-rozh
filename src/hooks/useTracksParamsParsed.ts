@@ -1,5 +1,6 @@
+import { O } from '@mobily/ts-belt';
+
 import { useTracksParamsOptions } from './useTracksParamsOptions';
-import * as Belt from '@mobily/ts-belt';
 import { type TracksParams } from '../types/apiSchemas';
 
 export function useTracksParamsParsed(): TracksParams {
@@ -12,12 +13,12 @@ export function useTracksParamsParsed(): TracksParams {
         orderOption,
     } = useTracksParamsOptions();
 
-    const page = Belt.O.getWithDefault(pageOption, 1);
-    const search = Belt.O.toUndefined(searchOption);
-    const artist = Belt.O.toUndefined(artistOption);
-    const genre = Belt.O.toUndefined(genreOption);
-    const sort = Belt.O.toUndefined(sortOption);
-    const order = Belt.O.toUndefined(orderOption);
+    const page = O.getWithDefault(pageOption, 1);
+    const search = O.toUndefined(searchOption);
+    const artist = O.toUndefined(artistOption);
+    const genre = O.toUndefined(genreOption);
+    const sort = O.toUndefined(sortOption);
+    const order = O.toUndefined(orderOption);
 
     return { page, search, artist, genre, sort, order };
 }

@@ -30,3 +30,15 @@ playwright-report/
 
 # TypeScript
 tsconfig.tsbuildinfo
+
+# Bundle report
+bundle-report.html
+
+# TS build info
+tsconfig.tsbuildinfo
+
+# Environment files
+.env.local
+.env.dev.local
+.env.staging.local
+.env.production.local
