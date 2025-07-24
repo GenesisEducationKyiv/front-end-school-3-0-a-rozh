@@ -1,0 +1,160 @@
+import { useState, memo } from 'react';
+import { HiOutlinePencilSquare, HiOutlineTrash } from 'react-icons/hi2';
+import toast from 'react-hot-toast';
+
+import { useDeleteFileMutation, useDeleteTrackMutation } from '../services/api';
+
+import Label from './Label';
+import TracksModal from './TracksModal';
+import PlayButton from './AudioPlayer/PlayButton';
+import TrackDuration from './AudioPlayer/TrackDuration';
+import UploadAudio from './UploadAudio';
+import ConfirmationModal from './ConfirmationModal';
+
+import { audioActions } from '../store/features/audio/audioSlice';
+import { useAppDispatch } from '../hooks/useAppDispatch';
+
+import { type Track } from '../types/apiSchemas';
+
+import { MESSAGES } from '../constants';
+
+interface TracksRowProps {
+    track: Track;
+    isSelected: boolean;
+    handleSelectTrack: (id: string) => void;
+}
+
+const TracksRow = memo(function TracksRow({
+    track,
+    isSelected,
+    handleSelectTrack,
+}: TracksRowProps) {
+    const [fileError, setFileError] = useState<string | null>(null);
+    const [deleteTrack] = useDeleteTrackMutation();
+    const [deleteFile] = useDeleteFileMutation();
+    const cover = track.coverImage || '/images/default-cover.webp';
+    const dispatch = useAppDispatch();
+    return (
+        <tr
+            className="border-b bg-gray-800 border-gray-700   hover:bg-gray-600"
+            data-testid={`track-item-${track.id}`}
+        >
+            <td className="w-4 p-4">
+                <div className="flex items-center">
+                    <input
+                        id="checkbox-table-search-1"
+                        type="checkbox"
+                        className="w-4 h-4 text-blue-600   rounded-sm  focus:ring-blue-600 ring-offset-gray-800 focus:ring-offset-gray-800 focus:ring-2 bg-gray-700 border-gray-600"
+                        checked={isSelected}
+                        onChange={() => handleSelectTrack(track.id)}
+                        data-testid={`checkbox-track-${track.id}`}
+                    />
+                    <label htmlFor="checkbox-table-search-1" className="sr-only">
+                        checkbox
+                    </label>
+                </div>
+            </td>
+
+            <td className="px-6 py-4">
+                <img
+                    className="object-cover"
+                    src={cover}
+                    alt={`${track.title} song cover image`}
+                    width={80}
+                    height={80}
+                />
+            </td>
+            <td className="px-6 py-4" data-testid={`track-item-${track.id}-title`}>
+                {track.title}
+            </td>
+            <td className="px-6 py-4" data-testid={`track-item-${track.id}-artist`}>
+                {track.artist}
+            </td>
+            <td className="px-6 py-4">{track.album}</td>
+            <td className="px-6 py-4 flex gap-2 items-start flex-wrap">
+                {track.genres.length > 0
+                    ? track.genres.map((genre) => (
+                          <Label size="small" key={genre}>
+                              {genre}
+                          </Label>
+                      ))
+                    : '-'}
+            </td>
+            {/* AUDIO FILE */}
+            <td className="px-5 py-4">
+                {track.audioFile && (
+                    <div className="flex gap-3 items-center">
+                        <PlayButton trackId={track.id} trackName={track.title} />
+                        <TrackDuration trackId={track.id} />
+                        <ConfirmationModal
+                            text={MESSAGES.CONFIRM_DELETE_FILE}
+                            onConfirm={() => {
+                                dispatch(audioActions.clearAudio());
+                                deleteFile(track.id)
+                                    .unwrap()
+                                    .then(() => toast.success(MESSAGES.FILE_DELETED))
+                                    .catch(() => toast.error(MESSAGES.SOMETHING_WRONG));
+                            }}
+                            trigger={
+                                <button className="bg-red-500 text-white w-6 h-6 flex items-center justify-center rounded-xs hover:bg-red-300 cursor-pointer ml-auto">
+                                    <HiOutlineTrash />
+                                </button>
+                            }
+                        />
+                    </div>
+                )}
+
+                {!track.audioFile && (
+                    <>
+                        <div className=" bg-teal-800 hover:bg-teal-900 flex items-center justify-center rounded-xs text-white min-w-50">
+                            <UploadAudio trackId={track.id} onFileError={setFileError} />
+                        </div>
+                        {fileError && (
+                            <p
+                                className="mt-1 text-red-400 text-sm bg-opacity-100 hover:bg-gray-600"
+                                data-testid={`error-file-upload-${track.id}`}
+                            >
+                                {fileError}
+                            </p>
+                        )}
+                    </>
+                )}
+            </td>
+            {/* BUTTONS BLOCK */}
+            <td className="px-4 py-4">
+                <div className="flex gap-2">
+                    <TracksModal
+                        trigger={
+                            <button
+                                className="bg-teal-600 hover:bg-teal-700 w-6 h-6 flex items-center justify-center rounded-xs text-white cursor-pointer"
+                                data-testid={`edit-track-${track.id}`}
+                            >
+                                <HiOutlinePencilSquare />
+                            </button>
+                        }
+                        slug={track.slug}
+                    />
+                    <ConfirmationModal
+                        text={MESSAGES.CONFIRM_DELETE_TRACK}
+                        onConfirm={() =>
+                            deleteTrack(track.id)
+                                .unwrap()
+                                .then(() => toast.success(MESSAGES.TRACK_DELETED))
+                                .catch(() => toast.error(MESSAGES.SOMETHING_WRONG))
+                        }
+                        trigger={
+                            <button
+                                className="bg-red-500 text-white w-6 h-6 flex items-center justify-center rounded-xs hover:bg-red-300 cursor-pointer"
+                                data-testid={`delete-track-${track.id}`}
+                            >
+                                <HiOutlineTrash />
+                            </button>
+                        }
+                    />
+                </div>
+            </td>
+        </tr>
+    );
+});
+
+export default TracksRow;
