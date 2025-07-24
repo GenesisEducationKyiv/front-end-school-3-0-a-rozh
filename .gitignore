@@ -42,3 +42,7 @@ tsconfig.tsbuildinfo
 .env.dev.local
 .env.staging.local
 .env.production.local
+
+# Storybook
+*storybook.log
+storybook-static

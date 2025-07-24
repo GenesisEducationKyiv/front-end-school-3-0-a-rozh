@@ -1,0 +1,43 @@
+:root {
+    /* Colors */
+    --color-white: #ffffff;
+
+    --color-primary: #1e2939;
+    --color-primary-hover: #4a5565;
+
+    --color-success: #0d9488;
+    --color-success-hover: #0f766e;
+
+    --color-error: #ef4444;
+    --color-error-hover: #f87171;
+
+    --color-neutral-light: #d4d7db;
+    --color-neutral: #9ca3af;
+    --color-neutral-dark: #6a7282;
+    --color-neutral-darker: #374151;
+
+    /* Spacing */
+    --space-xs: 2px;
+    --space-sm: 6px;
+    --space-md: 8px;
+    --space-lg: 14px;
+    --space-xl: 16px;
+    --space-2xl: 18px;
+    --space-3xl: 24px;
+    --space-4xl: 28px;
+
+    /* Typography */
+    --font-weight-medium: 500;
+    --text-sm: 14px;
+    --text-base: 16px;
+    --text-lg: 18px;
+    --text-xl: 1rem;
+    --line-height: 24px;
+    --letter-spacing-wide: 0.15px;
+
+    /* Border Radius */
+    --radius-md: 8px;
+
+    /* Transitions */
+    --transition-colors: background-color 0.2s ease;
+}

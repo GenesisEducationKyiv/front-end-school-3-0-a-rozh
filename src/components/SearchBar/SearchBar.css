@@ -1,0 +1,28 @@
+.m3-searchbar {
+    display: flex;
+    align-items: center;
+    background-color: var(--color-neutral-darker);
+    padding: var(--space-xs) var(--space-md);
+    color: var(--color-neutral);
+    border-bottom: 2px solid var(--color-neutral-dark);
+}
+
+.m3-searchbar-icon {
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+    margin-right: var(--space-md);
+}
+
+.m3-searchbar-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--color-white);
+    font-size: var(--text-xl);
+    outline: none;
+}
+
+.m3-searchbar-input::placeholder {
+    color: var(--color-neutral);
+}
